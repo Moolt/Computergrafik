@@ -22,6 +22,7 @@ public class Main extends GLJPanel implements GLEventListener {
     private final float cameraZ = 80f;
     private final float cameraSmoothing = 10f;
     private final SkySphere skySphere;
+    private final Terrain terrain;
 
     public static void main(String[] args) {
         JFrame window = new JFrame();
@@ -38,11 +39,13 @@ public class Main extends GLJPanel implements GLEventListener {
         this.addKeyListener(keyboardInput);
         this.towTruck = new TowTruck();
         this.mouseInput = new MouseInput(this);
+        this.skySphere = new SkySphere(this);
+        this.terrain = new Terrain("./textures/heightmap.jpg");
         this.addMouseWheelListener(mouseInput);
         this.addGLEventListener(towTruck);
         this.addGLEventListener(new Floor(100, 100, -20f));
-        this.skySphere = new SkySphere(this);
         this.addGLEventListener(skySphere);
+        this.addGLEventListener(terrain);
         this.animator = new FPSAnimator(this, 60, false);
         this.animator.start();
         this.width = 720;

@@ -57,22 +57,23 @@ public class Floor implements GLEventListener {
         floorTexture.bind(gl);
         float repeath = width / 32;
         float repeatv = height / 32;
-        
-        for(int i = 0; i < width; i++){
-            for(int j = 0; j < height; j++){
-                gl.glBegin(GL2.GL_QUADS);
+
+        gl.glBegin(GL2.GL_QUADS);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+
                 gl.glTexCoord2f(0, 1.5f);
-                gl.glVertex3f(64*i, z, 64+64*j);
+                gl.glVertex3f(64 * i, z, 64 + 64 * j);
                 gl.glTexCoord2f(1.5f, 1.5f);
-                gl.glVertex3f(64+64*i, z, 64+64*j);
+                gl.glVertex3f(64 + 64 * i, z, 64 + 64 * j);
                 gl.glTexCoord2f(1.5f, 0);
-                gl.glVertex3f(64+64*i, z, 64*j);
+                gl.glVertex3f(64 + 64 * i, z, 64 * j);
                 gl.glTexCoord2f(0, 0);
-                gl.glVertex3f(64*i, z, 64*j);
-                gl.glEnd();
-                
+                gl.glVertex3f(64 * i, z, 64 * j);
+
             }
         }
+        gl.glEnd();
         //Flaeche zeichnen
         floorTexture.disable(gl);
     }

@@ -50,34 +50,31 @@ public class SkySphere implements GLEventListener {
     @Override
     public void display(GLAutoDrawable glad) {
 
-
     }
-    
-    public void draw(GL2 gl){
-                //GL2 gl = glad.getGL().getGL2();
+
+    public void draw(GL2 gl) {
+        //GL2 gl = glad.getGL().getGL2();
         skyTexture.enable(gl);
         skyTexture.bind(gl);
-        gl.glDisable(GL.GL_DEPTH_TEST);
-        gl.glDepthMask(false);
-        
-        gl.glPushMatrix();
-       // gl.glLoadIdentity();
-        gl.glTranslatef(main.getCameraX(), main.getCameraZ(), main.getCameraY());
-        gl.glRotatef(90, 1f, 0f, 0f);
+
+        //create glu object and configure the sphere
         GLU glu = GLU.createGLU(gl);
         GLUquadric quad = glu.gluNewQuadric();
         glu.gluQuadricTexture(quad, true);
-        glu.gluQuadricOrientation(quad, GLU.GLU_INSIDE);         
+        glu.gluQuadricOrientation(quad, GLU.GLU_INSIDE);        
+        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glDepthMask(false);
+        gl.glPushMatrix();
+        gl.glTranslatef(main.getCameraX(), main.getCameraZ(), main.getCameraY());
+        gl.glRotatef(90, 1f, 0f, 0f);
+        //draw the spehere
         glu.gluSphere(quad, 400, 10, 15);
-        //glu.gluDeleteQuadric(quad);
         gl.glPopMatrix();
         gl.glPopAttrib();
         gl.glDepthMask(true);
         gl.glEnable(GL.GL_DEPTH_TEST);
- 
         skyTexture.disable(gl);
-        
-        
+        glu.gluDeleteQuadric(quad);
     }
 
     @Override
