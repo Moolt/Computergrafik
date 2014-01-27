@@ -22,10 +22,11 @@ import javax.media.opengl.GLException;
  */
 public class Floor implements GLEventListener {
 
-    private float width, height, z;
+    private int width, height;
+    private float z;
     private Texture floorTexture;
 
-    public Floor(float width, float height, float z) {
+    public Floor(int width, int height, float z) {
         this.width = width;
         this.height = height;
         this.z = z;
@@ -53,19 +54,26 @@ public class Floor implements GLEventListener {
     public void display(GLAutoDrawable glad) {
         GL2 gl = glad.getGL().getGL2();
         floorTexture.enable(gl);
+        floorTexture.bind(gl);
         float repeath = width / 32;
         float repeatv = height / 32;
+        
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
+                gl.glBegin(GL2.GL_QUADS);
+                gl.glTexCoord2f(0, 1.5f);
+                gl.glVertex3f(64*i, z, 64+64*j);
+                gl.glTexCoord2f(1.5f, 1.5f);
+                gl.glVertex3f(64+64*i, z, 64+64*j);
+                gl.glTexCoord2f(1.5f, 0);
+                gl.glVertex3f(64+64*i, z, 64*j);
+                gl.glTexCoord2f(0, 0);
+                gl.glVertex3f(64*i, z, 64*j);
+                gl.glEnd();
+                
+            }
+        }
         //Flaeche zeichnen
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glTexCoord2f(0, repeatv);
-        gl.glVertex3f(-width, z, height);
-        gl.glTexCoord2f(repeath, repeatv);
-        gl.glVertex3f(width, z, height);
-        gl.glTexCoord2f(repeath, 0);
-        gl.glVertex3f(width, z, -height);
-        gl.glTexCoord2f(0, 0);
-        gl.glVertex3f(-width, z, -height);
-        gl.glEnd();
         floorTexture.disable(gl);
     }
 

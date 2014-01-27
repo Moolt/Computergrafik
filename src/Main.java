@@ -19,8 +19,9 @@ public class Main extends GLJPanel implements GLEventListener {
     private float cameraX = 0f;
     private float cameraY = 0f;
     private float cameraDistance = 150f;
-    private final float cameraZ = 100f;
+    private final float cameraZ = 80f;
     private final float cameraSmoothing = 10f;
+    private final SkySphere skySphere;
 
     public static void main(String[] args) {
         JFrame window = new JFrame();
@@ -39,7 +40,9 @@ public class Main extends GLJPanel implements GLEventListener {
         this.mouseInput = new MouseInput(this);
         this.addMouseWheelListener(mouseInput);
         this.addGLEventListener(towTruck);
-        this.addGLEventListener(new Floor(2000f, 2000f, -20f));
+        this.addGLEventListener(new Floor(100, 100, -20f));
+        this.skySphere = new SkySphere(this);
+        this.addGLEventListener(skySphere);
         this.animator = new FPSAnimator(this, 60, false);
         this.animator.start();
         this.width = 720;
@@ -50,23 +53,23 @@ public class Main extends GLJPanel implements GLEventListener {
     public void display(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
         GLU glu = GLU.createGLU(gl);
+        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+        this.skySphere.draw(gl);
+//        float light_position[] = {1.0f, 1.0f, 1.0f, 1f};
+//        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position, 0);
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
         glu.gluPerspective(45, width / height, 1.0, 1000);
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
-        float light_position[] = {1.0f, 1.0f, 1.0f, 1f};
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position, 0);
-        this.setLight(gl);
         float cY = (float) Math.cos(Math.toRadians(towTruck.getDirection())) * cameraDistance * (1 + 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed());
         float cX = (float) Math.sin(Math.toRadians(towTruck.getDirection())) * cameraDistance * (1 + 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed());
         //Die Kamera nimmt nicht die berechneten werte an, sondern "haengt immer etwas hinterher"        
         cameraY -= (cameraY - cY) / cameraSmoothing;
         cameraX -= (cameraX - cX) / cameraSmoothing;
         //Kamera guckt auf das Auto
-        glu.gluLookAt(-cameraX + towTruck.getxPosition(), cameraZ * (1 - 0.4f * towTruck.getSpeed() / towTruck.getMaxSpeed()), -cameraY + towTruck.getyPosition(), this.towTruck.getxPosition(), 0.0, this.towTruck.getyPosition(), 0.0, 1.0, 0.0);
+        glu.gluLookAt(-cameraX + towTruck.getxPosition(), cameraZ * (1 - 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed()), -cameraY + towTruck.getyPosition(), this.towTruck.getxPosition(), 0.0, this.towTruck.getyPosition(), 0.0, 1.0, 0.0);
         gl.glFlush();
     }
 
@@ -88,32 +91,17 @@ public class Main extends GLJPanel implements GLEventListener {
         gl.glMatrixMode(GL2.GL_PROJECTION);
 
         float mat_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+        float mat_ambient[] = {1.0f, 1.0f, 1.0f, 1.0f};
         float mat_shininess[] = {10.0f};
         float light_position[] = {1.0f, 1.0f, 1.0f, 0f};
 
-        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, mat_specular, 0);
-        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SHININESS, mat_shininess, 0);
+//        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, mat_specular, 0);
+//        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SHININESS, mat_shininess, 0);
+//        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, mat_ambient, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light_position, 0);
 
-        gl.glEnable(GL2.GL_LIGHTING);
+        //gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_LIGHT0);
-
-    }
-
-    private void setLight(GL2 gl) {
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadIdentity();
-        gl.glEnable(GL2.GL_LIGHT1);
-        float SHINE_ALL_DIRECTIONS = 1;
-        float[] lightPos = {0, 0, 0, SHINE_ALL_DIRECTIONS};
-        float[] lightColorAmbient = {0.5f, 0.5f, 0.5f, 1f};
-        float[] lightColorSpecular = {0.9f, 0.9f, 0.9f, 1f};
-
-        // Set light parameters.
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, lightPos, 0);
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, lightColorAmbient, 0);
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, lightColorSpecular, 0);
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, lightColorSpecular, 0);
 
     }
 
@@ -135,5 +123,17 @@ public class Main extends GLJPanel implements GLEventListener {
 
     public void zoomOut() {
         this.cameraDistance += 10f;
+    }       
+
+    public float getCameraX() {
+        return -cameraX + towTruck.getxPosition();
     }
+
+    public float getCameraY() {
+        return -cameraY + towTruck.getyPosition();
+    }
+
+    public float getCameraZ() {
+        return cameraZ * (1 - 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed());
+    }       
 }

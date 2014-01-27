@@ -15,7 +15,6 @@ import javax.media.opengl.GLEventListener;
  */
 public class TowTruck implements GLEventListener {
 
-    //private GL2 gl;
     private GLModel carModel; //das modell des autos
     private GLModel tireModel; //das modell eines reifens
     private float xPosition = 0f;
