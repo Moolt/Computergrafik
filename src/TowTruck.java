@@ -15,17 +15,27 @@ import javax.media.opengl.GLEventListener;
  */
 public class TowTruck implements GLEventListener {
 
+    private Terrain terrain;
     private GLModel carModel; //das modell des autos
     private GLModel tireModel; //das modell eines reifens
     private float xPosition = 0f;
     private float yPosition = 0f;
     private float direction = 10;
+    private float height = 0f;
     private int rotationY = 54;
     private float tireRotation = 0;
     private float tireTurn = 0f; //die auslenkung der reifen nach rechts/links    
     private float speed = 0f; //die momentane geschwindigkeit des autos
     private final float maxTurn = 20f; //die maximale auslenkung
     private final float maxSpeed = 15f; //die maximal zu erreichende geschwindigkeit
+    private float tilt[] = new float[3]; //neigung des autos
+
+    public TowTruck(Terrain terrain) {
+        this.terrain = terrain;
+        tilt[0] = 0f;
+        tilt[1] = 0f;
+        tilt[2] = 0f;
+    }
 
     /**
      * Hier werden die Keyboard-Eingaben verarbeitet und die Bewegungen des
@@ -76,6 +86,15 @@ public class TowTruck implements GLEventListener {
         //Berechnung der Position aus Richtung und Geschwindigkeit
         this.yPosition += Math.cos(Math.toRadians(direction)) * speed / 3;
         this.xPosition += Math.sin(Math.toRadians(direction)) * speed / 3;
+        
+        
+        //winkel vom auto wird aus der differenz der urspruenglichen hoehe und der neuen berechnet
+        //damit die bewegung etwas weicher wirkt, wird der winkel mit aelteren interpoliert
+        float prevHeight = height;
+        tilt[0] = tilt[1];
+        tilt[1] = tilt[2];
+        this.height = this.terrain.getHeight(xPosition, yPosition);
+        this.tilt[2] = (height - prevHeight) * 3 + tilt[1]/4 + tilt[0]/8;
     }
 
     private void drawTire(GL2 gl, float x, float y, float z, boolean front) {
@@ -111,9 +130,10 @@ public class TowTruck implements GLEventListener {
 
         gl.glPushMatrix();
 
-        gl.glTranslatef(xPosition, 0, yPosition);
+        gl.glTranslatef(xPosition, height + 20, yPosition);
         gl.glScalef(0.25f, 0.25f, 0.25f);
         gl.glRotatef(direction - 90, 0f, 1f, 0f);
+        gl.glRotatef(tilt[2], 0f, 0f, 1f);
         this.carModel.opengldraw(gl);
         tireRotation += speed;
         this.drawTire(gl, 70, -45, -50, true);
@@ -144,6 +164,14 @@ public class TowTruck implements GLEventListener {
         this.yPosition = yPosition;
     }
 
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
     public float getDirection() {
         return direction;
     }
@@ -163,5 +191,8 @@ public class TowTruck implements GLEventListener {
     public float getMaxSpeed() {
         return maxSpeed;
     }
-
+    
+    public float getTilt(){
+        return tilt[2] + tilt[1]/2 + tilt[0] /4;
+    }
 }

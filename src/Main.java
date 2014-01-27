@@ -18,8 +18,8 @@ public class Main extends GLJPanel implements GLEventListener {
     private TowTruck towTruck;
     private float cameraX = 0f;
     private float cameraY = 0f;
-    private float cameraDistance = 150f;
-    private final float cameraZ = 80f;
+    private float cameraDistance = 150f;   
+    private final float cameraZ = 100f;
     private final float cameraSmoothing = 10f;
     private final SkySphere skySphere;
     private final Terrain terrain;
@@ -37,10 +37,10 @@ public class Main extends GLJPanel implements GLEventListener {
         this.addGLEventListener(this);
         this.keyboardInput = new KeyboardInput();
         this.addKeyListener(keyboardInput);
-        this.towTruck = new TowTruck();
         this.mouseInput = new MouseInput(this);
         this.skySphere = new SkySphere(this);
-        this.terrain = new Terrain("./textures/heightmap.jpg");
+        this.terrain = new Terrain("./textures/heightmap2.png");
+        this.towTruck = new TowTruck(terrain);
         this.addMouseWheelListener(mouseInput);
         this.addGLEventListener(towTruck);
         this.addGLEventListener(new Floor(100, 100, -20f));
@@ -72,7 +72,7 @@ public class Main extends GLJPanel implements GLEventListener {
         cameraY -= (cameraY - cY) / cameraSmoothing;
         cameraX -= (cameraX - cX) / cameraSmoothing;
         //Kamera guckt auf das Auto
-        glu.gluLookAt(-cameraX + towTruck.getxPosition(), cameraZ * (1 - 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed()), -cameraY + towTruck.getyPosition(), this.towTruck.getxPosition(), 0.0, this.towTruck.getyPosition(), 0.0, 1.0, 0.0);
+        glu.gluLookAt(-cameraX + towTruck.getxPosition(), this.towTruck.getHeight() + cameraZ * (1 - 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed()), -cameraY + towTruck.getyPosition(), this.towTruck.getxPosition(), this.towTruck.getHeight(), this.towTruck.getyPosition(), 0.0, 1.0, 0.0);
         gl.glFlush();
     }
 
@@ -137,6 +137,6 @@ public class Main extends GLJPanel implements GLEventListener {
     }
 
     public float getCameraZ() {
-        return cameraZ * (1 - 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed());
+        return this.towTruck.getHeight() + cameraZ * (1 - 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed());
     }       
 }

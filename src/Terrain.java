@@ -29,6 +29,7 @@ public class Terrain implements GLEventListener {
     private float[][] heightmap;
     private int height, width;
     private Texture texture;
+    private int grid = 16;
 
     public Terrain(String heightmap) {
         try {
@@ -71,31 +72,58 @@ public class Terrain implements GLEventListener {
         GL2 gl = glad.getGL().getGL2();
         texture.enable(gl);
         texture.bind(gl);
-        int scale = 7; //1 to 10 pixel
-        float factor = 2.1f;
+        float factor = 1f;
 
         for (int w = 0; w < width - 1; w++) {
             gl.glBegin(GL2.GL_TRIANGLES);
             for (int h = 0; h < height - 1; h++) {
                 gl.glTexCoord2f(0, 0);
-                gl.glVertex3f(w * scale, (float) heightmap[w][h] / factor, h * scale);
+                gl.glVertex3f(w * grid, (float) heightmap[w][h] / factor, h * grid);
                 gl.glTexCoord2f(0, 1);
-                gl.glVertex3f(w * scale, (float) heightmap[w][h + 1] / factor, (h + 1) * scale);
+                gl.glVertex3f(w * grid, (float) heightmap[w][h + 1] / factor, (h + 1) * grid);
                 gl.glTexCoord2f(1, 1);
-                gl.glVertex3f((w + 1) * scale, (float) heightmap[w + 1][h + 1] / factor, (h + 1) * scale);
+                gl.glVertex3f((w + 1) * grid, (float) heightmap[w + 1][h + 1] / factor, (h + 1) * grid);
 
                 gl.glTexCoord2f(0, 0);
-                gl.glVertex3f(w * scale, (float) heightmap[w][h] / factor, h * scale);
+                gl.glVertex3f(w * grid, (float) heightmap[w][h] / factor, h * grid);
                 gl.glTexCoord2f(1, 1);
-                gl.glVertex3f((w + 1) * scale, (float) heightmap[w + 1][h + 1] / factor, (h + 1) * scale);
+                gl.glVertex3f((w + 1) * grid, (float) heightmap[w + 1][h + 1] / factor, (h + 1) * grid);
                 gl.glTexCoord2f(1, 0);
-                gl.glVertex3f((w + 1) * scale, (float) heightmap[w + 1][h] / factor, h * scale);
+                gl.glVertex3f((w + 1) * grid, (float) heightmap[w + 1][h] / factor, h * grid);
             }
             gl.glEnd();
         }
 
         texture.disable(gl);
 
+    }
+
+    public float getHeight(float x, float z) {
+        //determine which grid the instance is in
+        int gridx = (int) Math.floor(x / grid);
+        int gridy = (int) Math.floor(z / grid);
+        
+        //out of terrain
+        if(gridx < 0 || gridy < 0 || gridx >= width || gridy >= height){
+            return 0f;
+        }
+
+        //determine where in the grid the instance is
+        float offsetx = x - grid * gridx;
+        float offsety = z - grid * gridy;
+
+        //retrieve z values from grid map
+        float z1 = heightmap[gridx][gridy];
+        float z2 = heightmap[gridx + 1][gridy];
+        float z3 = heightmap[gridx + 1][gridy + 1];
+        float z4 = heightmap[gridx][gridy + 1];
+
+//determine which triangle the instance is in
+        if (offsetx > offsety) {
+            return z1 + ((z2 - z1) / (grid / Math.max(1, offsetx))) + ((z3 - z2) / (grid / Math.max(1, offsety)));
+        } else {
+            return z1 + ((z3 - z4) / (grid / Math.max(1, offsetx))) + ((z4 - z1) / (grid / Math.max(1, offsety)));
+        }
     }
 
     @Override
