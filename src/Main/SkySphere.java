@@ -1,3 +1,5 @@
+package Main;
+
 
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;

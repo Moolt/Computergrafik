@@ -1,3 +1,5 @@
+package Main;
+
 
 import java.awt.event.KeyEvent;
 import javax.media.opengl.GL2;
@@ -15,7 +17,7 @@ import javax.media.opengl.GLEventListener;
  */
 public class TowTruck implements GLEventListener {
 
-    private Terrain terrain;
+    //private Terrain terrain;
     private GLModel carModel; //das modell des autos
     private GLModel tireModel; //das modell eines reifens
     private float xPosition = 0f;
@@ -27,21 +29,19 @@ public class TowTruck implements GLEventListener {
     private float tireTurn = 0f; //die auslenkung der reifen nach rechts/links    
     private float speed = 0f; //die momentane geschwindigkeit des autos
     private final float maxTurn = 20f; //die maximale auslenkung
-    private final float maxSpeed = 15f; //die maximal zu erreichende geschwindigkeit
-    private float tilt[] = new float[3]; //neigung des autos
+    private final float maxSpeed = 20f; //die maximal zu erreichende geschwindigkeit
 
-    public TowTruck(Terrain terrain) {
-        this.terrain = terrain;
-        tilt[0] = 0f;
-        tilt[1] = 0f;
-        tilt[2] = 0f;
+    //private float tilt[] = new float[3]; //neigung des autos
+    public TowTruck(float xpos, float ypos) {
+        this.xPosition = xpos;
+        this.yPosition = ypos;
     }
-
+        
     /**
      * Hier werden die Keyboard-Eingaben verarbeitet und die Bewegungen des
      * Autos berechnet
      */
-    private void update() {
+    private void update() {       
         //Drehung der Vorderraeder nach rechts
         if (KeyboardInput.isPressed(KeyEvent.VK_D)) {
             if (tireTurn > -maxTurn) {
@@ -85,16 +85,7 @@ public class TowTruck implements GLEventListener {
 
         //Berechnung der Position aus Richtung und Geschwindigkeit
         this.yPosition += Math.cos(Math.toRadians(direction)) * speed / 3;
-        this.xPosition += Math.sin(Math.toRadians(direction)) * speed / 3;
-        
-        
-        //winkel vom auto wird aus der differenz der urspruenglichen hoehe und der neuen berechnet
-        //damit die bewegung etwas weicher wirkt, wird der winkel mit aelteren interpoliert
-        float prevHeight = height;
-        tilt[0] = tilt[1];
-        tilt[1] = tilt[2];
-        this.height = this.terrain.getHeight(xPosition, yPosition);
-        this.tilt[2] = (height - prevHeight) * 3 + tilt[1]/4 + tilt[0]/8;
+        this.xPosition += Math.sin(Math.toRadians(direction)) * speed / 3;      
     }
 
     private void drawTire(GL2 gl, float x, float y, float z, boolean front) {
@@ -133,7 +124,6 @@ public class TowTruck implements GLEventListener {
         gl.glTranslatef(xPosition, height + 20, yPosition);
         gl.glScalef(0.25f, 0.25f, 0.25f);
         gl.glRotatef(direction - 90, 0f, 1f, 0f);
-        gl.glRotatef(tilt[2], 0f, 0f, 1f);
         this.carModel.opengldraw(gl);
         tireRotation += speed;
         this.drawTire(gl, 70, -45, -50, true);
@@ -190,9 +180,5 @@ public class TowTruck implements GLEventListener {
 
     public float getMaxSpeed() {
         return maxSpeed;
-    }
-    
-    public float getTilt(){
-        return tilt[2] + tilt[1]/2 + tilt[0] /4;
     }
 }

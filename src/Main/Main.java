@@ -1,3 +1,5 @@
+package Main;
+
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -18,11 +20,11 @@ public class Main extends GLJPanel implements GLEventListener {
     private TowTruck towTruck;
     private float cameraX = 0f;
     private float cameraY = 0f;
-    private float cameraDistance = 150f;   
-    private final float cameraZ = 100f;
+    private float cameraDistance = 500f;
+    private final float cameraZ = 400f;
     private final float cameraSmoothing = 10f;
     private final SkySphere skySphere;
-    private final Terrain terrain;
+    private final Road road;
 
     public static void main(String[] args) {
         JFrame window = new JFrame();
@@ -39,13 +41,12 @@ public class Main extends GLJPanel implements GLEventListener {
         this.addKeyListener(keyboardInput);
         this.mouseInput = new MouseInput(this);
         this.skySphere = new SkySphere(this);
-        this.terrain = new Terrain("./textures/heightmap2.png");
-        this.towTruck = new TowTruck(terrain);
+        this.towTruck = new TowTruck(1000, 800);
+        this.road = new Road(towTruck, 1000);
         this.addMouseWheelListener(mouseInput);
         this.addGLEventListener(towTruck);
-        this.addGLEventListener(new Floor(100, 100, -20f));
         this.addGLEventListener(skySphere);
-        this.addGLEventListener(terrain);
+        this.addGLEventListener(road);
         this.animator = new FPSAnimator(this, 60, false);
         this.animator.start();
         this.width = 720;
@@ -63,7 +64,7 @@ public class Main extends GLJPanel implements GLEventListener {
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45, width / height, 1.0, 1000);
+        glu.gluPerspective(45, width / height, 1.0, 10000);
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
         float cY = (float) Math.cos(Math.toRadians(towTruck.getDirection())) * cameraDistance * (1 + 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed());
@@ -72,7 +73,7 @@ public class Main extends GLJPanel implements GLEventListener {
         cameraY -= (cameraY - cY) / cameraSmoothing;
         cameraX -= (cameraX - cX) / cameraSmoothing;
         //Kamera guckt auf das Auto
-        glu.gluLookAt(-cameraX + towTruck.getxPosition(), this.towTruck.getHeight() + cameraZ * (1 - 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed()), -cameraY + towTruck.getyPosition(), this.towTruck.getxPosition(), this.towTruck.getHeight(), this.towTruck.getyPosition(), 0.0, 1.0, 0.0);
+        glu.gluLookAt(towTruck.getxPosition(), this.towTruck.getHeight() + cameraZ * (1 - 0.1f * towTruck.getSpeed() / towTruck.getMaxSpeed()), towTruck.getyPosition() - cameraDistance, this.towTruck.getxPosition(), this.towTruck.getHeight(), this.towTruck.getyPosition(), 0.0, 1.0, 0.0);
         gl.glFlush();
     }
 
@@ -85,8 +86,8 @@ public class Main extends GLJPanel implements GLEventListener {
     public void init(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
         gl.glEnable(GL2.GL_DEPTH_TEST);
-        gl.glShadeModel(GL2.GL_SMOOTH);
-        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        gl.glShadeModel(GL2.GL_SMOOTH);        
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_FASTEST);
 //        gl.glEnable(GL2.GL_COLOR_MATERIAL);
 //        gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_CULL_FACE);
@@ -105,7 +106,7 @@ public class Main extends GLJPanel implements GLEventListener {
 
         //gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_LIGHT0);
-
+       // this.enableFog(gl);
     }
 
     @Override
@@ -120,23 +121,32 @@ public class Main extends GLJPanel implements GLEventListener {
         gl.glMatrixMode(GL2.GL_MODELVIEW);
     }
 
+    private void enableFog(GL2 gl) {
+        float density = 0.3f;
+        float[] fogColor = {.1f, .1f, .1f, 1.0f};
+        gl.glEnable(GL2.GL_FOG);
+        gl.glFogi(GL2.GL_FOG_MODE , GL2.GL_EXP2);
+        gl.glFogfv(GL2.GL_FOG_COLOR, fogColor, 1);
+        gl.glFogf(GL2.GL_FOG_DENSITY, density);
+    }
+
     public void zoomIn() {
         this.cameraDistance -= 10f;
     }
 
     public void zoomOut() {
         this.cameraDistance += 10f;
-    }       
+    }
 
     public float getCameraX() {
-        return -cameraX + towTruck.getxPosition();
+        return towTruck.getxPosition();
     }
 
     public float getCameraY() {
-        return -cameraY + towTruck.getyPosition();
+        return towTruck.getyPosition() - cameraDistance;
     }
 
     public float getCameraZ() {
         return this.towTruck.getHeight() + cameraZ * (1 - 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed());
-    }       
+    }
 }

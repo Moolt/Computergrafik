@@ -1,12 +1,14 @@
+package Main;
+
 
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -26,14 +28,21 @@ import javax.media.opengl.GLEventListener;
  */
 public class Terrain implements GLEventListener {
 
+    private GLModel treeModel;
+    private List<Tree> trees;
     private float[][] heightmap;
     private int height, width;
     private Texture texture;
-    private int grid = 16;
+    private int grid = 4;
+    private float factor = 2f;
 
-    public Terrain(String heightmap) {
+    public Terrain(String heightmapPath, int grid, float factor) {
+        this.trees = new ArrayList<>();
+        this.grid = grid;
+        this.factor = factor;
+
         try {
-            BufferedImage bufferedImage = ImageIO.read(new File(heightmap));
+            BufferedImage bufferedImage = ImageIO.read(new File(heightmapPath));
             this.height = bufferedImage.getHeight();
             this.width = bufferedImage.getWidth();
 
@@ -53,6 +62,8 @@ public class Terrain implements GLEventListener {
     @Override
     public void init(GLAutoDrawable glad) {
         GL2 gl = glad.getGL().getGL2();
+        this.treeModel = ModelLoaderOBJ.LoadModel("./models/tree.obj", "", gl);
+        //this.placeTrees(1000);
         try {
             this.texture = TextureIO.newTexture(new File("./textures/dirt.jpg"), true);
             texture.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
@@ -70,9 +81,9 @@ public class Terrain implements GLEventListener {
     @Override
     public void display(GLAutoDrawable glad) {
         GL2 gl = glad.getGL().getGL2();
+        this.drawTrees(gl);
         texture.enable(gl);
         texture.bind(gl);
-        float factor = 1f;
 
         for (int w = 0; w < width - 1; w++) {
             gl.glBegin(GL2.GL_TRIANGLES);
@@ -93,18 +104,16 @@ public class Terrain implements GLEventListener {
             }
             gl.glEnd();
         }
-
         texture.disable(gl);
-
     }
 
     public float getHeight(float x, float z) {
         //determine which grid the instance is in
         int gridx = (int) Math.floor(x / grid);
         int gridy = (int) Math.floor(z / grid);
-        
+
         //out of terrain
-        if(gridx < 0 || gridy < 0 || gridx >= width || gridy >= height){
+        if (gridx < 0 || gridy < 0 || gridx >= width || gridy >= height) {
             return 0f;
         }
 
@@ -120,9 +129,9 @@ public class Terrain implements GLEventListener {
 
 //determine which triangle the instance is in
         if (offsetx > offsety) {
-            return z1 + ((z2 - z1) / (grid / Math.max(1, offsetx))) + ((z3 - z2) / (grid / Math.max(1, offsety)));
+            return (z1 + ((z2 - z1) / (grid / Math.max(1, offsetx))) + ((z3 - z2) / (grid / Math.max(1, offsety)))) / factor;
         } else {
-            return z1 + ((z3 - z4) / (grid / Math.max(1, offsetx))) + ((z4 - z1) / (grid / Math.max(1, offsety)));
+            return (z1 + ((z3 - z4) / (grid / Math.max(1, offsetx))) + ((z4 - z1) / (grid / Math.max(1, offsety)))) / factor;
         }
     }
 
@@ -131,4 +140,26 @@ public class Terrain implements GLEventListener {
 
     }
 
+    private void drawTrees(GL2 gl) {
+
+       // gl.glPushMatrix();
+        //gl.glLoadIdentity();
+        for (Tree tree : trees) {
+            gl.glTranslatef(tree.getX(), tree.getZ(), tree.getY());
+            gl.glScalef(0.25f, 0.25f, 0.25f);
+            gl.glRotatef(tree.getRotation(), 0f, 1f, 0f);
+            this.treeModel.opengldraw(gl);
+        }
+       // gl.glPopMatrix();
+    }
+
+    public void placeTrees(int count) {
+        for (int i = 0; i < count; i++) {
+            float tx = (float) Math.random() * width;
+            float ty = (float) Math.random() * height;
+            float tz = this.getHeight(tx, ty);
+            Tree t = new Tree(tx, ty, tz);
+            this.trees.add(t);
+        }
+    }
 }
