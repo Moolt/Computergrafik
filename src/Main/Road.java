@@ -57,6 +57,7 @@ public class Road implements GLEventListener {
     private float tunnelWallTileY;
     private float waterTileX;
     private float waterTileY;
+    private float waterEndGrassTileY;
 
     public Road(TowTruck towTruck, float midOfRoad) {
         this.towTruck = towTruck;
@@ -86,6 +87,7 @@ public class Road implements GLEventListener {
         tunnelWallTileY = tunnelWallHeight / brickTexture.getHeight();
         waterTileX = waterWidth / waterTexture.getWidth();
         waterTileY = roadTileHeight / waterTexture.getHeight();
+        waterEndGrassTileY = waterHeight * -1 / grassTexture.getHeight();
 
         for (int i = 0; i < numberOfTiles; i++) {
             roadTiles.add(createRandomTile(i));
@@ -262,9 +264,9 @@ public class Road implements GLEventListener {
         gl.glBegin(GL2.GL_QUADS);
         //Zeichne grasskante
         this.drawWall(gl, midOfRoad - roadTileWidth / 2 - roadDropWidth - sideStripeWidth, (mainHeight + i + 1) * roadTileHeight, -10,
-                midOfRoad - roadTileWidth / 2 - roadDropWidth - grassTileWidth, (mainHeight + i + 1) * roadTileHeight, waterHeight, tunnelWallBeginTileX, tunnelWallTileY);
+                midOfRoad - roadTileWidth / 2 - roadDropWidth - grassTileWidth, (mainHeight + i + 1) * roadTileHeight, waterHeight, grassTileX, waterEndGrassTileY);
         this.drawWall(gl, midOfRoad + roadTileWidth / 2 + roadDropWidth + grassTileWidth, (mainHeight + i + 1) * roadTileHeight, -10,
-                midOfRoad + roadTileWidth / 2 + roadDropWidth + sideStripeWidth, (mainHeight + i + 1) * roadTileHeight, waterHeight, tunnelWallBeginTileX, tunnelWallTileY);
+                midOfRoad + roadTileWidth / 2 + roadDropWidth + sideStripeWidth, (mainHeight + i + 1) * roadTileHeight, waterHeight, grassTileX, waterEndGrassTileY);
         gl.glEnd();
         grassTexture.disable(gl);
     }
