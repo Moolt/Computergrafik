@@ -249,8 +249,10 @@ public class Road implements GLEventListener {
         gl.glBlendColor(1.000f, 0.812f, 0.812f, 0.620f);
 
         gl.glBegin(GL2.GL_QUADS);
+        this.drawFloor(gl, midOfRoad - roadTileWidth / 2 - roadDropWidth - waterWidth / 2, (mainHeight + i) * roadTileHeight, waterHeight-1,
+                midOfRoad + roadTileWidth / 2 + roadDropWidth + waterWidth / 2, (mainHeight + i + 1) * roadTileHeight, waterHeight-1, waterTileX, waterTileY, -waterOffset, -waterOffset / 3 - (float)Math.cos(waterOffset));
         this.drawFloor(gl, midOfRoad - roadTileWidth / 2 - roadDropWidth - waterWidth / 2, (mainHeight + i) * roadTileHeight, waterHeight,
-                midOfRoad + roadTileWidth / 2 + roadDropWidth + waterWidth / 2, (mainHeight + i + 1) * roadTileHeight, waterHeight, waterTileX, waterTileY, waterOffset, waterOffset / 2);
+                midOfRoad + roadTileWidth / 2 + roadDropWidth + waterWidth / 2, (mainHeight + i + 1) * roadTileHeight, waterHeight, waterTileX, waterTileY, waterOffset, waterOffset / 3);
         gl.glEnd();
         waterTexture.disable(gl);
         gl.glDisable(GL2.GL_BLEND);

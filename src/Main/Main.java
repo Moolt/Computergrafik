@@ -64,7 +64,7 @@ public class Main extends GLJPanel implements GLEventListener {
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45, width / height, 1.0, 10000);
+        glu.gluPerspective(45, width / height, 1.0, 100000);
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
         float cY = (float) Math.cos(Math.toRadians(towTruck.getDirection())) * cameraDistance * (1 + 0.5f * towTruck.getSpeed() / towTruck.getMaxSpeed());
@@ -74,7 +74,7 @@ public class Main extends GLJPanel implements GLEventListener {
         cameraX -= (cameraX - cX) / cameraSmoothing;
         //Kamera guckt auf das Auto
         glu.gluLookAt(towTruck.getxPosition(), this.towTruck.getHeight() + cameraZ * (1 - 0.1f * towTruck.getSpeed() / towTruck.getMaxSpeed()), towTruck.getyPosition() - cameraDistance, this.towTruck.getxPosition(), this.towTruck.getHeight(), this.towTruck.getyPosition(), 0.0, 1.0, 0.0);
-        gl.glFlush();
+        gl.glFlush();        
     }
 
     @Override
