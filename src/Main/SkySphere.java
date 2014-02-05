@@ -4,15 +4,12 @@ package Main;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLException;
-import javax.media.opengl.GLProfile;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
 
@@ -67,7 +64,7 @@ public class SkySphere implements GLEventListener {
         gl.glDisable(GL.GL_DEPTH_TEST);
         gl.glDepthMask(false);
         gl.glPushMatrix();
-        gl.glTranslatef(main.getCameraX(), main.getCameraZ(), main.getCameraY());
+        gl.glTranslatef(main.getCameraX(), main.getCameraY(), main.getCameraZ());
         gl.glRotatef(90, 1f, 0f, 0f);
         //draw the spehere
         glu.gluSphere(quad, 400, 10, 15);

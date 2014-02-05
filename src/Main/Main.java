@@ -1,8 +1,8 @@
 package Main;
 
-
 import Camera.Camera;
 import Camera.ThirdPersonCamera;
+import Camera.Topdown;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
@@ -16,11 +16,11 @@ public class Main extends GLJPanel implements GLEventListener {
 
     private static int width;
     private static int height;
-    private Camera camera;
+    private Camera activeCamera;
     private final FPSAnimator animator;
     private final KeyboardInput keyboardInput;
     private final MouseInput mouseInput;
-    private TowTruck towTruck;  
+    private TowTruck towTruck;
     private final SkySphere skySphere;
     private final Road road;
 
@@ -47,7 +47,7 @@ public class Main extends GLJPanel implements GLEventListener {
         this.addGLEventListener(towTruck);
         this.addGLEventListener(skySphere);
         this.addGLEventListener(road);
-        this.camera = new ThirdPersonCamera(towTruck, width, height);
+        this.activeCamera = new ThirdPersonCamera(towTruck, width, height);
         this.animator = new FPSAnimator(this, 60, false);
         this.animator.start();
     }
@@ -59,9 +59,9 @@ public class Main extends GLJPanel implements GLEventListener {
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         this.skySphere.draw(gl);
 
-        this.camera.look(gl);
-        
-        gl.glFlush();        
+        this.activeCamera.look(gl);
+
+        gl.glFlush();
     }
 
     @Override
@@ -72,8 +72,9 @@ public class Main extends GLJPanel implements GLEventListener {
     @Override
     public void init(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
+        GLU glu = GLU.createGLU(gl);
         gl.glEnable(GL2.GL_DEPTH_TEST);
-        gl.glShadeModel(GL2.GL_SMOOTH);        
+        gl.glShadeModel(GL2.GL_SMOOTH);
         gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_FASTEST);
 //        gl.glEnable(GL2.GL_COLOR_MATERIAL);
 //        gl.glEnable(GL2.GL_LIGHTING);
@@ -93,7 +94,7 @@ public class Main extends GLJPanel implements GLEventListener {
 
         //gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_LIGHT0);
-       // this.enableFog(gl);
+        // this.enableFog(gl);glMatrixMode(GL_PROJECTION);
     }
 
     @Override
@@ -112,28 +113,28 @@ public class Main extends GLJPanel implements GLEventListener {
         float density = 0.3f;
         float[] fogColor = {.1f, .1f, .1f, 1.0f};
         gl.glEnable(GL2.GL_FOG);
-        gl.glFogi(GL2.GL_FOG_MODE , GL2.GL_EXP2);
+        gl.glFogi(GL2.GL_FOG_MODE, GL2.GL_EXP2);
         gl.glFogfv(GL2.GL_FOG_COLOR, fogColor, 1);
         gl.glFogf(GL2.GL_FOG_DENSITY, density);
     }
 
     public void zoomIn() {
-        this.camera.zoomIn(10f);
+        this.activeCamera.zoomIn(10f);
     }
 
     public void zoomOut() {
-        this.camera.zoomOut(10f);
+        this.activeCamera.zoomOut(10f);
     }
 
     public float getCameraX() {
-        return 1;
+        return this.activeCamera.getX();
     }
 
     public float getCameraY() {
-        return 1;
+        return this.activeCamera.getY();
     }
 
     public float getCameraZ() {
-        return 1;
+        return this.activeCamera.getZ();
     }
 }
