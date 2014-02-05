@@ -123,10 +123,10 @@ public class Road implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable glad) {
-        if ((int) towTruck.getyPosition() / (int) roadTileHeight < roadTiles.size() / 2) {
+        if ((int) towTruck.getZ()/ (int) roadTileHeight < roadTiles.size() / 2) {
             mainHeight = roadTiles.size() / 2;
         } else {
-            mainHeight = (int) towTruck.getyPosition() / (int) roadTileHeight;
+            mainHeight = (int) towTruck.getZ()/ (int) roadTileHeight;
         }
         this.update();
 

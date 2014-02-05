@@ -1,5 +1,6 @@
 package Main;
 
+import Camera.Followable;
 import com.jogamp.opengl.util.texture.Texture;
 import java.awt.event.KeyEvent;
 import java.util.logging.Level;
@@ -22,7 +23,7 @@ import net.java.joglutils.model.iModel3DRenderer;
  *
  * @author Moolt
  */
-public class TowTruck implements GLEventListener {
+public class TowTruck implements GLEventListener, Followable {
 
     //private Terrain terrain;
     private Model model; //das modell des autos
@@ -30,10 +31,10 @@ public class TowTruck implements GLEventListener {
     private Model backlightModel; //das modell der hinterlicher
     private iModel3DRenderer modelRenderer;
     private Texture texture;
-    private float xPosition = 0f;
-    private float yPosition = 0f;
+    private float x = 0f;
+    private float y = 0f;
+    private float z = 0f;
     private float direction = 10;
-    private float height = 0f;
     private int rotationY = 54;
     private float tireRotation = 0;
     private float tireTurn = 0f; //die auslenkung der reifen nach rechts/links    
@@ -46,8 +47,8 @@ public class TowTruck implements GLEventListener {
 
     //private float tilt[] = new float[3]; //neigung des autos
     public TowTruck(float xpos, float ypos) {
-        this.xPosition = xpos;
-        this.yPosition = ypos;
+        this.x = xpos;
+        this.z = ypos;
     }
 
     /**
@@ -100,8 +101,8 @@ public class TowTruck implements GLEventListener {
         this.direction += (speed * tireTurn) / steering;
 
         //Berechnung der Position aus Richtung und Geschwindigkeit
-        this.yPosition += Math.cos(Math.toRadians(direction)) * speed / 3;
-        this.xPosition += Math.sin(Math.toRadians(direction)) * speed / 3;
+        this.x += Math.sin(Math.toRadians(direction)) * speed / 3;
+        this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
     }
 
     @Override
@@ -141,7 +142,7 @@ public class TowTruck implements GLEventListener {
         this.update();
 
         gl.glPushMatrix();
-        gl.glTranslatef(xPosition, height + 25, yPosition);
+        gl.glTranslatef(x, y + 25, z);
         gl.glScalef(8.0025f, 8.0025f, 8.0025f);
         gl.glRotatef(direction, 0f, 1f, 0f);
         modelRenderer.render(gl, model);
@@ -179,47 +180,30 @@ public class TowTruck implements GLEventListener {
 
     }
 
-    public float getxPosition() {
-        return xPosition;
-    }
-
-    public void setxPosition(float xPosition) {
-        this.xPosition = xPosition;
-    }
-
-    public float getyPosition() {
-        return yPosition;
-    }
-
-    public void setyPosition(float yPosition) {
-        this.yPosition = yPosition;
-    }
-
-    public float getHeight() {
-        return height;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
-    }
-
     public float getDirection() {
         return direction;
-    }
-
-    public void setDirection(float direction) {
-        this.direction = direction;
     }
 
     public float getSpeed() {
         return speed;
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
-
     public float getMaxSpeed() {
         return maxSpeed;
+    }
+
+    @Override
+    public float getX() {
+        return this.x;
+    }
+
+    @Override
+    public float getY() {
+        return this.y;
+    }
+
+    @Override
+    public float getZ() {
+        return this.z;
     }
 }
