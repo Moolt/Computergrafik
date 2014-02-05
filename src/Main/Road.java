@@ -6,9 +6,16 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
+import net.java.joglutils.model.DisplayListRenderer;
+import net.java.joglutils.model.ModelFactory;
+import net.java.joglutils.model.ModelLoadException;
+import net.java.joglutils.model.geometry.Model;
+import net.java.joglutils.model.iModel3DRenderer;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,6 +30,8 @@ public class Road implements GLEventListener {
 
     private TowTruck towTruck;
     private RoadAutomaton roadAutomaton;
+    private Model poempelModel;
+    private iModel3DRenderer modelRenderer;
     private List<Map.Entry<Integer, RoadTile>> roadTiles = new ArrayList<>();
     private int mainHeight = 0;
     private float midOfRoad = 1000f;
@@ -43,6 +52,7 @@ public class Road implements GLEventListener {
     private Texture brickTexture;
     private Texture waterTexture;
     private Texture cloudTexture;
+    private Texture middleSolidTexture;
 
     //tiling parameter fuer texturen
     private float tileX;
@@ -66,31 +76,43 @@ public class Road implements GLEventListener {
 
     @Override
     public void init(GLAutoDrawable glad) {
-        GL2 gl = glad.getGL().getGL2();
-        this.roadAutomaton = new RoadAutomaton();
-        this.roadTexture = TextureLoader.loadTexture(gl, "asphalt.png");
-        this.grassTexture = TextureLoader.loadTexture(gl, "grass.png");
-        this.concreteTexture = TextureLoader.loadTexture(gl, "concrete.png");
-        this.brickTexture = TextureLoader.loadTexture(gl, "brick.jpg");
-        this.waterTexture = TextureLoader.loadTexture(gl, "water.png");
-        this.cloudTexture = TextureLoader.loadTexture(gl, "clouds.jpg");
+        try {
+            GL2 gl = glad.getGL().getGL2();
+            this.modelRenderer = DisplayListRenderer.getInstance();
+            this.roadAutomaton = new RoadAutomaton();
+            this.roadTexture = TextureLoader.loadTexture(gl, "asphalt.png");
+            this.grassTexture = TextureLoader.loadTexture(gl, "grass.png");
+            this.concreteTexture = TextureLoader.loadTexture(gl, "concrete.png");
+            this.brickTexture = TextureLoader.loadTexture(gl, "brick.jpg");
+            this.waterTexture = TextureLoader.loadTexture(gl, "water.png");
+            this.cloudTexture = TextureLoader.loadTexture(gl, "clouds.jpg");
+            this.middleSolidTexture = TextureLoader.loadTexture(gl, "middlesolid.png");
 
-        tileX = roadTileWidth / roadTexture.getWidth();
-        tileY = roadTileHeight / roadTexture.getHeight();
-        roadDropTile = roadDropWidth / roadTexture.getWidth();
-        grassTileX = grassTileWidth / grassTexture.getWidth();
-        grassTileY = roadTileHeight / grassTexture.getHeight();
-        sideStripeTileX = sideStripeWidth / concreteTexture.getWidth();
-        sideStripeTileY = roadTileHeight / concreteTexture.getHeight();
-        tunnelWallBeginTileX = tunnelBeginWallWidth / concreteTexture.getWidth();
-        tunnelWallTileX = roadTileHeight / brickTexture.getWidth();
-        tunnelWallTileY = tunnelWallHeight / brickTexture.getHeight();
-        waterTileX = waterWidth / waterTexture.getWidth();
-        waterTileY = roadTileHeight / waterTexture.getHeight();
-        waterEndGrassTileY = waterHeight * -1 / grassTexture.getHeight();
+            this.poempelModel = ModelFactory.createModel("./models/poempel.obj");
+            this.poempelModel.setUseTexture(true);
+            this.poempelModel.setUnitizeSize(false);
+            poempelModel.centerModelOnPosition(true);
+            poempelModel.setRenderModelBounds(false);
 
-        for (int i = 0; i < numberOfTiles; i++) {
-            roadTiles.add(createRandomTile(i));
+            tileX = roadTileWidth / roadTexture.getWidth();
+            tileY = roadTileHeight / roadTexture.getHeight();
+            roadDropTile = roadDropWidth / roadTexture.getWidth();
+            grassTileX = grassTileWidth / grassTexture.getWidth();
+            grassTileY = roadTileHeight / grassTexture.getHeight();
+            sideStripeTileX = sideStripeWidth / concreteTexture.getWidth();
+            sideStripeTileY = roadTileHeight / concreteTexture.getHeight();
+            tunnelWallBeginTileX = tunnelBeginWallWidth / concreteTexture.getWidth();
+            tunnelWallTileX = roadTileHeight / brickTexture.getWidth();
+            tunnelWallTileY = tunnelWallHeight / brickTexture.getHeight();
+            waterTileX = waterWidth / waterTexture.getWidth();
+            waterTileY = roadTileHeight / waterTexture.getHeight();
+            waterEndGrassTileY = waterHeight * -1 / grassTexture.getHeight();
+
+            for (int i = 0; i < numberOfTiles; i++) {
+                roadTiles.add(createRandomTile(i));
+            }
+        } catch (ModelLoadException ex) {
+            Logger.getLogger(Road.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -199,6 +221,20 @@ public class Road implements GLEventListener {
     private void drawGrassTile(GL2 gl, int i) {
         this.drawRoad(gl, i);
 
+        for (int j = 0; j < 2; j++) {
+            //gl.glLoadIdentity();
+            gl.glPushMatrix();
+            gl.glTranslatef(midOfRoad + roadTileWidth / 2 + roadDropWidth + 10, 35f, (mainHeight + i) * roadTileHeight + (roadTileHeight / 2) * j + (roadTileHeight / 4));
+            gl.glScalef(30f, 40f, 30f);
+            modelRenderer.render(gl, poempelModel);
+            gl.glPopMatrix();
+            gl.glPushMatrix();
+            gl.glTranslatef(midOfRoad - roadTileWidth / 2 - roadDropWidth - 10, 35f, (mainHeight + i) * roadTileHeight + (roadTileHeight / 2) * j + (roadTileHeight / 4));
+            gl.glScalef(30f, 40f, 30f);
+            modelRenderer.render(gl, poempelModel);
+            gl.glPopMatrix();
+        }
+
         grassTexture.bind(gl);
         grassTexture.enable(gl);
         gl.glBegin(GL2.GL_QUADS);
@@ -249,10 +285,8 @@ public class Road implements GLEventListener {
         gl.glBlendColor(1.000f, 0.812f, 0.812f, 0.620f);
 
         gl.glBegin(GL2.GL_QUADS);
-        this.drawFloor(gl, midOfRoad - roadTileWidth / 2 - roadDropWidth - waterWidth / 2, (mainHeight + i) * roadTileHeight, waterHeight-1,
-                midOfRoad + roadTileWidth / 2 + roadDropWidth + waterWidth / 2, (mainHeight + i + 1) * roadTileHeight, waterHeight-1, waterTileX, waterTileY, -waterOffset, -waterOffset / 3 - (float)Math.cos(waterOffset));
-        this.drawFloor(gl, midOfRoad - roadTileWidth / 2 - roadDropWidth - waterWidth / 2, (mainHeight + i) * roadTileHeight, waterHeight,
-                midOfRoad + roadTileWidth / 2 + roadDropWidth + waterWidth / 2, (mainHeight + i + 1) * roadTileHeight, waterHeight, waterTileX, waterTileY, waterOffset, waterOffset / 3);
+        this.drawFloor(gl, midOfRoad - roadTileWidth / 2 - roadDropWidth - waterWidth / 2, (mainHeight + i) * roadTileHeight, waterHeight + 1,
+                midOfRoad + roadTileWidth / 2 + roadDropWidth + waterWidth / 2, (mainHeight + i + 1) * roadTileHeight, waterHeight + 1, waterTileX, waterTileY, -waterOffset, -waterOffset / 5 - (float) Math.cos(waterOffset));
         gl.glEnd();
         waterTexture.disable(gl);
         gl.glDisable(GL2.GL_BLEND);

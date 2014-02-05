@@ -25,8 +25,9 @@ import net.java.joglutils.model.iModel3DRenderer;
 public class TowTruck implements GLEventListener {
 
     //private Terrain terrain;
-    private Model carModel; //das modell des autos
+    private Model model; //das modell des autos
     private Model tireModel; //das modell eines reifens
+    private Model backlightModel; //das modell der hinterlicher
     private iModel3DRenderer modelRenderer;
     private Texture texture;
     private float xPosition = 0f;
@@ -37,9 +38,11 @@ public class TowTruck implements GLEventListener {
     private float tireRotation = 0;
     private float tireTurn = 0f; //die auslenkung der reifen nach rechts/links    
     private float speed = 0f; //die momentane geschwindigkeit des autos
-    private float steering = 250f;
+    private final float steering = 250f; //lenktraegigkeit
+    private final float acceleration = 0.15f; //beschleunigung
     private final float maxTurn = 20f; //die maximale auslenkung
-    private final float maxSpeed = 20f; //die maximal zu erreichende geschwindigkeit
+    private final float maxSpeed = 27f; //die maximal zu erreichende geschwindigkeit
+    private boolean reverse = false;
 
     //private float tilt[] = new float[3]; //neigung des autos
     public TowTruck(float xpos, float ypos) {
@@ -52,6 +55,7 @@ public class TowTruck implements GLEventListener {
      * Autos berechnet
      */
     private void update() {
+        reverse = false;
         //Drehung der Vorderraeder nach rechts
         if (KeyboardInput.isPressed(KeyEvent.VK_D)) {
             if (tireTurn > -maxTurn) {
@@ -70,24 +74,26 @@ public class TowTruck implements GLEventListener {
         //Vorwaertsbewegung beim Druecken von W
         if (KeyboardInput.isPressed(KeyEvent.VK_W)) {
             if (speed < maxSpeed) {
-                speed += 0.1f;
+                speed += acceleration;                
             }
             //Rueckwaertsbewegung beim Druecken von S
         } else if (KeyboardInput.isPressed(KeyEvent.VK_S)) {
             if (speed > -maxSpeed / 2) {
-                speed -= 0.1f;
+                speed -= acceleration;
+                reverse = true;
             }
             //Ausbremsen bei Vorwaertsbewegung
         } else if (speed > 0) {
-            speed -= 0.05f;
+            speed -= acceleration/2;            
             //Ausbremsen bei Rueckwaertsbewegung
         } else if (speed < 0) {
-            speed += 0.05f;
+            speed += acceleration/2;                 
         }
 
         //Bremse beim Druecken der Leertaste
         if (KeyboardInput.isPressed(KeyEvent.VK_SPACE)) {
             speed -= speed / 30;
+            reverse = true;
         }
 
         //Anpassen der Richtung anhand der Reifendrehung und Geschwindigkeit
@@ -98,37 +104,29 @@ public class TowTruck implements GLEventListener {
         this.xPosition += Math.sin(Math.toRadians(direction)) * speed / 3;
     }
 
-    private void drawTire(GL2 gl, float x, float y, float z, boolean front) {
-        gl.glPushMatrix();
-        gl.glTranslatef(x, y, z);
-        if (front) {
-            gl.glRotatef(tireTurn, 0f, 1f, 0f);
-        }
-        gl.glRotatef(-tireRotation, 1f, 0f, 0f);
-        this.modelRenderer.render(gl, tireModel);
-        gl.glPopMatrix();
-    }
-
     @Override
     public void init(GLAutoDrawable glad) {
         GL2 gl = glad.getGL().getGL2();
         this.modelRenderer = DisplayListRenderer.getInstance();
+
+        this.model = this.loadModel("./models/car.obj", true);
+        this.tireModel = this.loadModel("./models/tire.obj", true);
+        this.backlightModel = this.loadModel("./models/backlights.obj", false);
+
+    }
+
+    private Model loadModel(String path, boolean center) {
         try {
-            this.carModel = ModelFactory.createModel("./models/car.obj");
-            this.tireModel = ModelFactory.createModel("./models/tire.obj");
-            // When loading the model, adjust the center to the boundary center
-            this.carModel.centerModelOnPosition(true);
-            this.tireModel.centerModelOnPosition(true);
-            this.carModel.setUseTexture(true);
-            this.tireModel.setUseTexture(true);
-            this.carModel.setRenderModelBounds(false);
-            this.tireModel.setRenderModelBounds(false);
-            //carModel.setUseLighting(true);
-            this.carModel.setUnitizeSize(false);
-            this.tireModel.setUnitizeSize(false);
+            Model model = ModelFactory.createModel(path);
+            model.centerModelOnPosition(center);
+            model.setUseTexture(true);
+            model.setRenderModelBounds(false);
+            model.setUnitizeSize(false);
+            return model;
 
         } catch (ModelLoadException ex) {
             Logger.getLogger(TowTruck.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 
@@ -141,24 +139,39 @@ public class TowTruck implements GLEventListener {
     public void display(GLAutoDrawable glad) {
         GL2 gl = glad.getGL().getGL2();
         this.update();
-        //gl.glLoadIdentity();
 
-        //texture.enable(gl);
-        //texture.bind(gl);
         gl.glPushMatrix();
-
         gl.glTranslatef(xPosition, height + 25, yPosition);
         gl.glScalef(8.0025f, 8.0025f, 8.0025f);
         gl.glRotatef(direction, 0f, 1f, 0f);
-        modelRenderer.render(gl, carModel);
+        modelRenderer.render(gl, model);
+        if (reverse) {
+            this.drawBacklights(gl);
+        }
         tireRotation += speed;
         this.drawTire(gl, +3.5f, -2, -5.8f, false);
         this.drawTire(gl, +3.5f, -2, +6.5f, true);
         this.drawTire(gl, -3.5f, -2, -5.8f, false);
         this.drawTire(gl, -3.5f, -2, +6.5f, true);
         gl.glPopMatrix();
+    }
 
-        //texture.disable(gl);
+    private void drawBacklights(GL2 gl) {
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+        modelRenderer.render(gl, backlightModel);
+        gl.glDisable(GL2.GL_BLEND);
+    }
+
+    private void drawTire(GL2 gl, float x, float y, float z, boolean front) {
+        gl.glPushMatrix();
+        gl.glTranslatef(x, y, z);
+        if (front) {
+            gl.glRotatef(tireTurn * 1.5f, 0f, 1f, 0f);
+        }
+        gl.glRotatef(-tireRotation, 1f, 0f, 0f);
+        this.modelRenderer.render(gl, tireModel);
+        gl.glPopMatrix();
     }
 
     @Override

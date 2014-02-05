@@ -14,6 +14,13 @@ import Main.RoadTile;
 public class TunnelState implements AutomatonState {
 
     private int possibleStates = 3;
+    private static int minRepeat;
+
+    public TunnelState() {
+        if (minRepeat == 0) {
+            minRepeat = (int) (Math.random() * 4) + 4;
+        }
+    }
 
     @Override
     public RoadTile getState() {
@@ -23,6 +30,11 @@ public class TunnelState implements AutomatonState {
     @Override
     public AutomatonState next(float random) {
         int state = Math.round(random * (possibleStates - 1));
+
+        if (minRepeat > 0) {
+            minRepeat--;
+            return this;
+        }
 
         switch (state) {
             case 0:
