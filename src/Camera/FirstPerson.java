@@ -24,8 +24,8 @@ public class FirstPerson extends Camera {
         gl.glLoadIdentity();
 
         //Position der Kamera
-        float frontX = (float) Math.sin(Math.toRadians(obj.getDirection())) * obj.getSpeed() / 3;
-        float frontZ = (float) Math.cos(Math.toRadians(obj.getDirection())) * obj.getSpeed() / 3;
+        float frontX = (float) Math.sin(Math.toRadians(obj.getDirection())) * (obj.getSpeed()+.5f) / 3;
+        float frontZ = (float) Math.cos(Math.toRadians(obj.getDirection())) * (obj.getSpeed()+.5f) / 3;
         //Positon des zu betrachtenden Punkts
         float endX = (float) Math.sin(Math.toRadians(obj.getDirection())) * obj.getSpeed();
         float endZ = (float) Math.cos(Math.toRadians(obj.getDirection())) * obj.getSpeed();
