@@ -25,7 +25,7 @@ public class Main extends GLJPanel implements GLEventListener {
     private final FPSAnimator animator;
     private final KeyboardInput keyboardInput;
     private final MouseInput mouseInput;
-    private TowTruck towTruck;
+    private Car towTruck;
     private final SkySphere skySphere;
     private final Road road;
 
@@ -46,7 +46,7 @@ public class Main extends GLJPanel implements GLEventListener {
         this.addKeyListener(keyboardInput);
         this.mouseInput = new MouseInput(this);
         this.skySphere = new SkySphere(this);
-        this.towTruck = new TowTruck(1000, 800);
+        this.towTruck = new Car(1000, 800);
         this.road = new Road(towTruck, 1000);
         this.addMouseWheelListener(mouseInput);
         this.addGLEventListener(towTruck);

@@ -1,6 +1,5 @@
 package Main;
 
-
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
 import java.io.File;
@@ -13,18 +12,16 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
+ * Zeichnet einen Skysphere an der Position der Kamera
  *
  * @author Moolt
  */
 public class SkySphere implements GLEventListener {
 
+    //Die Textur des Skysphere
     private Texture skyTexture;
+    //Eine Referenz zur Hauptklasse zur Ermittlung der Kameraposition
     private Main main;
 
     public SkySphere(Main main) {
@@ -52,22 +49,21 @@ public class SkySphere implements GLEventListener {
     }
 
     public void draw(GL2 gl) {
-        //GL2 gl = glad.getGL().getGL2();
         skyTexture.enable(gl);
         skyTexture.bind(gl);
 
-        //create glu object and configure the sphere
+        //GLU Instanz erzeugen und den quadratic-Koerper konfigurieren
         GLU glu = GLU.createGLU(gl);
         GLUquadric quad = glu.gluNewQuadric();
         glu.gluQuadricTexture(quad, true);
-        glu.gluQuadricOrientation(quad, GLU.GLU_INSIDE);   
-        //tiefenueberpruefung ausschalten
+        glu.gluQuadricOrientation(quad, GLU.GLU_INSIDE);
+        //Tiefenueberpruefung ausschalten
         gl.glDisable(GL.GL_DEPTH_TEST);
         gl.glDepthMask(false);
         gl.glPushMatrix();
         gl.glTranslatef(main.getCameraX(), main.getCameraY(), main.getCameraZ());
         gl.glRotatef(90, 1f, 0f, 0f);
-        //draw the spehere
+        //Zeichnen des Skysphere
         glu.gluSphere(quad, 400, 10, 15);
         gl.glPopMatrix();
         gl.glPopAttrib();

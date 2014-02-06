@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package RoadGenerator;
 
 import Main.RoadTile;
@@ -13,12 +8,14 @@ import Main.RoadTile;
  */
 public class GrassState implements AutomatonState {
 
+    //Die Anzahl der moeglichen Folgezustaende
     private int possibleStates = 3;
+    //Die minimale Wiederholung des Zustands
     private static int minRepeat;
-    
-    public GrassState(){
-        if(minRepeat == 0){
-            minRepeat = (int)(Math.random() * 10) + 6;
+
+    public GrassState() {
+        if (minRepeat == 0) {
+            minRepeat = (int) (Math.random() * 10) + 6;
         }
     }
 
@@ -31,12 +28,12 @@ public class GrassState implements AutomatonState {
     public AutomatonState next(float random) {
         float s1 = random * (possibleStates - 1f);
         int state = Math.round(s1);
-        
-        if(minRepeat > 0){
+
+        if (minRepeat > 0) {
             minRepeat--;
             return this;
         }
-        
+
         switch (state) {
             case 0:
                 return new WaterState();

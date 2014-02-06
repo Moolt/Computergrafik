@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package RoadGenerator;
 
 import Main.RoadTile;
@@ -13,7 +8,9 @@ import Main.RoadTile;
  */
 public class WaterState implements AutomatonState {
 
+    //Die Anzahl der moeglichen Folgezustaende
     private int possibleStates = 3;
+    //Die minimale Wiederholung des Zustands
     private static int minRepeat;
 
     public WaterState() {

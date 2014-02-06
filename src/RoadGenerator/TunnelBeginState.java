@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package RoadGenerator;
 
 import Main.RoadTile;
@@ -13,6 +8,7 @@ import Main.RoadTile;
  */
 public class TunnelBeginState implements AutomatonState {
 
+    //Die Anzahl der moeglichen Folgezustaende
     private int possibleStates = 1;
 
     @Override

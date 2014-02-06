@@ -1,7 +1,6 @@
 package Main;
 
 import Camera.Followable;
-import com.jogamp.opengl.util.texture.Texture;
 import java.awt.event.KeyEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,39 +13,46 @@ import net.java.joglutils.model.ModelLoadException;
 import net.java.joglutils.model.geometry.Model;
 import net.java.joglutils.model.iModel3DRenderer;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
- *
+ * Die Klasse Stellt ein Auto dar, das ueber Tastaturinteraktion bewegt werden kann
  * @author Moolt
  */
-public class TowTruck implements GLEventListener, Followable {
+public class Car implements GLEventListener, Followable {
 
-    //private Terrain terrain;
-    private Model model; //das modell des autos
-    private Model tireModel; //das modell eines reifens
-    private Model backlightModel; //das modell der hinterlicher
+    //Das Modell des Autos
+    private Model model;
+    //Das Modell eines Reifens
+    private Model tireModel;
+    //Das Modell der Ruecklichter
+    private Model backlightModel;
+    //Der Modell-Renderer zur Darstellung der Modelle
     private iModel3DRenderer modelRenderer;
-    private Texture texture;
+    //Die X-Position des Autos
     private float x = 0f;
+    //Die Y-Position des Autos
     private float y = 0f;
+    //Die Z-Position des Autos
     private float z = 0f;
+    //Die Richtung, in der das Auto faehrt
     private float direction = 10;
-    private int rotationY = 54;
+    //Die Drehung der Vorderraeder
     private float tireRotation = 0;
-    private float tireTurn = 0f; //die auslenkung der reifen nach rechts/links    
-    private float speed = 0f; //die momentane geschwindigkeit des autos
-    private final float steering = 250f; //lenktraegigkeit
-    private final float acceleration = 0.15f; //beschleunigung
-    private final float maxTurn = 20f; //die maximale auslenkung
-    private final float maxSpeed = 27f; //die maximal zu erreichende geschwindigkeit
+    //Die Auslenkung der Vorderraeder
+    private float tireTurn = 0f;
+    //Die Geschwindigkeit des Autos
+    private float speed = 0f;
+    //Traegheit beim Lenken
+    private final float steering = 250f;
+    //Die Beschleunigung
+    private final float acceleration = 0.15f;
+    //Maximale Auslenkung der Vorderraeder
+    private final float maxTurn = 20f;
+    //Maximale Geschwindigkeit des Autos
+    private final float maxSpeed = 27f;
+    //Ist der Rueckwaertsgang eingelegt?
     private boolean reverse = false;
-
-    //private float tilt[] = new float[3]; //neigung des autos
-    public TowTruck(float xpos, float ypos) {
+    
+    public Car(float xpos, float ypos) {
         this.x = xpos;
         this.z = ypos;
     }
@@ -70,12 +76,14 @@ public class TowTruck implements GLEventListener, Followable {
             //Zurueckdrehen der Vorderraeder bei Bewegung
         } else if (speed > 0) {
             tireTurn -= (speed * 0.01 * tireTurn);
+        } else if (speed < 0) {
+            tireTurn += (speed * 0.01 * tireTurn);
         }
 
         //Vorwaertsbewegung beim Druecken von W
         if (KeyboardInput.isPressed(KeyEvent.VK_W)) {
             if (speed < maxSpeed) {
-                speed += acceleration;                
+                speed += acceleration;
             }
             //Rueckwaertsbewegung beim Druecken von S
         } else if (KeyboardInput.isPressed(KeyEvent.VK_S)) {
@@ -85,10 +93,10 @@ public class TowTruck implements GLEventListener, Followable {
             }
             //Ausbremsen bei Vorwaertsbewegung
         } else if (speed > 0) {
-            speed -= acceleration/2;            
+            speed -= acceleration / 2;
             //Ausbremsen bei Rueckwaertsbewegung
         } else if (speed < 0) {
-            speed += acceleration/2;                 
+            speed += acceleration / 2;
         }
 
         //Bremse beim Druecken der Leertaste
@@ -110,10 +118,11 @@ public class TowTruck implements GLEventListener, Followable {
         GL2 gl = glad.getGL().getGL2();
         this.modelRenderer = DisplayListRenderer.getInstance();
 
+        //Hier werden die Modelle geladen
+        //Die Texturen werden automatisch durch die ModelFactory Klasse nachgeladen
         this.model = this.loadModel("./models/car.obj", true);
         this.tireModel = this.loadModel("./models/tire.obj", true);
         this.backlightModel = this.loadModel("./models/backlights.obj", false);
-
     }
 
     private Model loadModel(String path, boolean center) {
@@ -126,7 +135,7 @@ public class TowTruck implements GLEventListener, Followable {
             return model;
 
         } catch (ModelLoadException ex) {
-            Logger.getLogger(TowTruck.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Car.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -142,10 +151,12 @@ public class TowTruck implements GLEventListener, Followable {
         this.update();
 
         gl.glPushMatrix();
-        gl.glTranslatef(x, y + 25, z);
+        gl.glTranslatef(x, y + 30, z);
         gl.glScalef(8.0025f, 8.0025f, 8.0025f);
         gl.glRotatef(direction, 0f, 1f, 0f);
+        //Darstellung des Auto-Modells
         modelRenderer.render(gl, model);
+        //Darstellung der Ruecklichter, wenn das Auto rueckwaerts faehrt
         if (reverse) {
             this.drawBacklights(gl);
         }
@@ -157,6 +168,10 @@ public class TowTruck implements GLEventListener, Followable {
         gl.glPopMatrix();
     }
 
+    /**
+     * Zeichnet den Schein der Ruecklichter
+     * @param gl 
+     */
     private void drawBacklights(GL2 gl) {
         gl.glEnable(GL2.GL_BLEND);
         gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
@@ -164,6 +179,14 @@ public class TowTruck implements GLEventListener, Followable {
         gl.glDisable(GL2.GL_BLEND);
     }
 
+    /**
+     * Zeichnet ein Rad an der gegebenen Position mit Auslenkung (Falls Vorderrad)
+     * @param gl
+     * @param x X-Position des Rads
+     * @param y Y-Position des Rads
+     * @param z Z-Position des Rads
+     * @param front Ist das Rad ein Vorderrad?
+     */
     private void drawTire(GL2 gl, float x, float y, float z, boolean front) {
         gl.glPushMatrix();
         gl.glTranslatef(x, y, z);
@@ -180,14 +203,26 @@ public class TowTruck implements GLEventListener, Followable {
 
     }
 
+    /**
+     * 
+     * @return Die Richtung, in der das Auto faehrt
+     */
     public float getDirection() {
         return direction;
     }
 
+    /**
+     * 
+     * @return Die Geschwindigkeit des Autos
+     */
     public float getSpeed() {
         return speed;
     }
 
+    /**
+     * 
+     * @return Die maximale Geschwindigkeit des Autos
+     */
     public float getMaxSpeed() {
         return maxSpeed;
     }

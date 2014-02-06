@@ -1,19 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package RoadGenerator;
 
 import Main.RoadTile;
 
 /**
- *
+ * Ein Zustand des Zustandautomaten
  * @author Moolt
  */
 public interface AutomatonState {
 
+    /**
+     * @return Der aktuelle Zustand des Automaten
+     */
     public RoadTile getState();
 
+    /**
+     * 
+     * @param random Ein neuer, zufaelliger Zustand
+     * @return Zufallszahl, die die Auswahl des naechsten Zustands beeinflusst
+     */
     public AutomatonState next(float random);
 }

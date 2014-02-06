@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Camera;
 
 import javax.media.opengl.GL2;
@@ -14,11 +9,17 @@ import javax.media.opengl.glu.GLU;
  */
 public class ThirdPersonCamera extends Camera {
 
+    //Vorlaeufige X-Position
     private float cameraX = 0f;
+    //Vorlaeufige Y-Position
     private float cameraY = 400f;
+    //Vorlaeufige Z-Position
     private float cameraZ = 0f;
+    //Distanz der Kamera zum betrachteten Objekt
     private float cameraDistance = 500f;
+    //Traegheit der Kamerabewegung
     private float cameraSmoothing = 10f;
+    //Rotation mit dem Objekt
     private boolean isSticky = false;
 
     public ThirdPersonCamera(Followable obj, int width, int height) {
@@ -42,13 +43,14 @@ public class ThirdPersonCamera extends Camera {
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
+        //Abweichung der aktuellen zur potentiellen Position
         float cZ = (float) Math.cos(Math.toRadians(obj.getDirection()))
                 * cameraDistance * (1 + 0.5f * obj.getSpeed() / obj.getMaxSpeed());
         float cX = (float) Math.sin(Math.toRadians(obj.getDirection()))
                 * cameraDistance * (1 + 0.5f * obj.getSpeed() / obj.getMaxSpeed());
-        
-        
-        //Die Kamera nimmt nicht die berechneten werte an, sondern "haengt immer etwas hinterher"        
+
+        //Die Kamera nimmt nicht die berechneten werte an, sondern "haengt immer etwas hinterher"
+        //Dies bewirkt eine Traegheit der Kamera, um diese zu verhindern muss cameraSmoothing auf 1 gesetzt werden
         cameraX -= (cameraX - cX) / cameraSmoothing;
         cameraZ -= (cameraZ - cZ) / cameraSmoothing;
         //Kamera guckt auf das Auto

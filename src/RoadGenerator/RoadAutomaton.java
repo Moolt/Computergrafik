@@ -1,27 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package RoadGenerator;
 
 import Main.RoadTile;
 
 /**
- *
+ * Zustandsautomat, der zufaellige Strassenabschnitte erzeugt
  * @author Moolt
  */
 public class RoadAutomaton {
+    //Der aktuelle Zustand des Automaten
     private AutomatonState state;
-    
-    public RoadAutomaton(){
+
+    public RoadAutomaton() {
         this.state = new GrassState();
     }
-    
-    public RoadTile next(){
+
+    /**
+     * Gibt den aktuellen Zustand zurueck und laesst den Automaten einen
+     * neuen, zufaelligen Zustand annehmen
+     * @return Der Aktuelle Zustand des Automaten
+     */
+    public RoadTile next() {
         RoadTile tile = state.getState();
-        this.state = state.next((float)Math.random());
+        this.state = state.next((float) Math.random());
         System.err.println(tile.toString());
         return tile;
     }

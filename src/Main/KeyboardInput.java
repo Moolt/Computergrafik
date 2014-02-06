@@ -1,17 +1,12 @@
 package Main;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Erleichtert die Verarbeitung von Tastatureingaben
  * @author Moolt
  */
 public class KeyboardInput implements KeyListener {

@@ -1,27 +1,46 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package Camera;
 
 /**
+ * Interface fuer Objekte, die von einer Kamera verfolgt werden koennen
  *
  * @author Moolt
  */
-public interface Followable{
+public interface Followable {
 
+    /**
+     *
+     * @return X-Position des zu verfolgenden Objekts
+     */
     public abstract float getX();
-    
+
+    /**
+     *
+     * * @return Y-Position des zu verfolgenden Objekts
+     */
     public abstract float getY();
-    
+
+    /**
+     *
+     * @return Z-Position des zu verfolgenden Objekts
+     */
     public abstract float getZ();
-    
+
+    /**
+     *
+     * @return Ausrichtung des zu verfolgenden Objekts
+     */
     public abstract float getDirection();
-    
-    public abstract  float getSpeed();
-    
-    public abstract  float getMaxSpeed();
-    
+
+    /**
+     *
+     * @return Geschwindigkeit des zu verfolgenden Objekts
+     */
+    public abstract float getSpeed();
+
+    /**
+     *
+     * @return Maximale Geschwindigkeit des zu verfolgenden Objekts
+     */
+    public abstract float getMaxSpeed();
+
 }

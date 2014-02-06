@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Camera;
 
 import javax.media.opengl.GL2;
@@ -13,9 +8,9 @@ import javax.media.opengl.glu.GLU;
  * @author Moolt
  */
 public class Topdown extends Camera {
-
-    private float cameraDistance = 500f;
-    private float cameraSmoothing = 10f;
+    
+    //Distanz der Kamera zum betrachteten Objekt    
+    private float cameraDistance = 500f; 
 
     public Topdown(Followable obj, int width, int height) {
         super(obj, width, height);
