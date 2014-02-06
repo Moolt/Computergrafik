@@ -170,7 +170,7 @@ public class TowTruck implements GLEventListener, Followable {
         if (front) {
             gl.glRotatef(tireTurn * 1.5f, 0f, 1f, 0f);
         }
-        gl.glRotatef(-tireRotation, 1f, 0f, 0f);
+        gl.glRotatef(+tireRotation, 1f, 0f, 0f);
         this.modelRenderer.render(gl, tireModel);
         gl.glPopMatrix();
     }

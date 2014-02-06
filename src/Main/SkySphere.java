@@ -60,7 +60,8 @@ public class SkySphere implements GLEventListener {
         GLU glu = GLU.createGLU(gl);
         GLUquadric quad = glu.gluNewQuadric();
         glu.gluQuadricTexture(quad, true);
-        glu.gluQuadricOrientation(quad, GLU.GLU_INSIDE);        
+        glu.gluQuadricOrientation(quad, GLU.GLU_INSIDE);   
+        //tiefenueberpruefung ausschalten
         gl.glDisable(GL.GL_DEPTH_TEST);
         gl.glDepthMask(false);
         gl.glPushMatrix();

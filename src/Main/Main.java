@@ -3,6 +3,8 @@ package Main;
 import Camera.Camera;
 import Camera.ThirdPersonCamera;
 import Camera.Topdown;
+import Camera.FirstPerson;
+import com.jogamp.newt.event.KeyEvent;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
@@ -10,13 +12,19 @@ import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
 
 //@SuppressWarnings("serial")
 public class Main extends GLJPanel implements GLEventListener {
 
     private static int width;
     private static int height;
-    private Camera activeCamera;
+    private List<Camera> cameras;
+    private int activeCamera;
     private final FPSAnimator animator;
     private final KeyboardInput keyboardInput;
     private final MouseInput mouseInput;
@@ -47,19 +55,31 @@ public class Main extends GLJPanel implements GLEventListener {
         this.addGLEventListener(towTruck);
         this.addGLEventListener(skySphere);
         this.addGLEventListener(road);
-        this.activeCamera = new ThirdPersonCamera(towTruck, width, height);
+        this.cameras = new LinkedList<>();
+        this.cameras.add(new FirstPerson(towTruck, width, height));
+        this.cameras.add(new ThirdPersonCamera(towTruck, width, height));
+        this.cameras.add(new Topdown(towTruck, width, height));
+        this.activeCamera = 0;
         this.animator = new FPSAnimator(this, 60, false);
         this.animator.start();
     }
 
     @Override
     public void display(GLAutoDrawable drawable) {
+        if(KeyboardInput.isReleased(KeyEvent.VK_C)){
+            this.activeCamera += 1;
+            if(activeCamera >= cameras.size()){
+                activeCamera = 0;
+            }
+            keyboardInput.update();
+        }
+        
         GL2 gl = drawable.getGL().getGL2();
         GLU glu = GLU.createGLU(gl);
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         this.skySphere.draw(gl);
 
-        this.activeCamera.look(gl);
+        this.cameras.get(activeCamera).look(gl);
 
         gl.glFlush();
     }
@@ -119,22 +139,22 @@ public class Main extends GLJPanel implements GLEventListener {
     }
 
     public void zoomIn() {
-        this.activeCamera.zoomIn(10f);
+        this.cameras.get(activeCamera).zoomIn(10f);
     }
 
     public void zoomOut() {
-        this.activeCamera.zoomOut(10f);
+        this.cameras.get(activeCamera).zoomOut(10f);
     }
 
     public float getCameraX() {
-        return this.activeCamera.getX();
+        return this.cameras.get(activeCamera).getX();
     }
 
     public float getCameraY() {
-        return this.activeCamera.getY();
+        return this.cameras.get(activeCamera).getY();
     }
 
     public float getCameraZ() {
-        return this.activeCamera.getZ();
+        return this.cameras.get(activeCamera).getZ();
     }
 }
