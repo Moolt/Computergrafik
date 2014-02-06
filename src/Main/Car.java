@@ -33,6 +33,14 @@ public class Car implements GLEventListener, Followable {
     private float y = 0f;
     //Die Z-Position des Autos
     private float z = 0f;
+    //Maximale x-Wert des Autos vorne
+    private float maxXTop = 0f;
+    //Minimale x-Wert des Autos vorne 
+    private float minXTop = 0f;
+    //Maximale x-Wert des Autos hinten
+    private float maxXBot = 4.5518f;
+    //Minimale x-Wert des Autos hinten
+    private float minXBot = -4.0956f;
     //Die Richtung, in der das Auto faehrt
     private float direction = 10;
     //Die Drehung der Vorderraeder
@@ -62,6 +70,8 @@ public class Car implements GLEventListener, Followable {
      * Autos berechnet
      */
     private void update() {
+        //System.out.println("xMinTop: "+minXTop+" und xMaxTop: "+maxXTop);
+        //System.out.println(" Linker Rand Bot: "+(minXBot)+" Rechter Rand Bot: "+(maxXBot)+ " direction: "+direction);
         reverse = false;
         //Drehung der Vorderraeder nach rechts
         if (KeyboardInput.isPressed(KeyEvent.VK_D)) {
@@ -97,7 +107,7 @@ public class Car implements GLEventListener, Followable {
             //Ausbremsen bei Rueckwaertsbewegung
         } else if (speed < 0) {
             speed += acceleration / 2;
-        }
+        } 
 
         //Bremse beim Druecken der Leertaste
         if (KeyboardInput.isPressed(KeyEvent.VK_SPACE)) {
@@ -109,8 +119,23 @@ public class Car implements GLEventListener, Followable {
         this.direction += (speed * tireTurn) / steering;
 
         //Berechnung der Position aus Richtung und Geschwindigkeit
-        this.x += Math.sin(Math.toRadians(direction)) * speed / 3;
-        this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
+        if(maxXTop<=90.1 && minXTop<=82.1){
+            float tmpx = this.x;
+            this.x += Math.sin(Math.toRadians(direction)) * speed / 3;
+            maxXTop += (this.x-tmpx);
+            minXTop -= (this.x-tmpx);       
+            this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
+        }else{
+           if((maxXTop>90.1 && (direction<0||direction>180))||(minXTop>82.1 && (direction>0||direction<-180))){ 
+                float tmpx = this.x;
+                this.x += Math.sin(Math.toRadians(direction)) * speed / 3;
+                maxXTop += (this.x-tmpx);
+                minXTop -= (this.x-tmpx);               
+                this.z += Math.cos(Math.toRadians(direction)) * speed / 3; 
+           }else{
+               this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
+           }
+        }
     }
 
     @Override
@@ -132,6 +157,10 @@ public class Car implements GLEventListener, Followable {
             model.setUseTexture(true);
             model.setRenderModelBounds(false);
             model.setUnitizeSize(false);
+            if(path.equals("./models/car.obj")){
+                maxXTop = model.getBounds().max.x;
+                minXTop = model.getBounds().min.x;
+            }
             return model;
 
         } catch (ModelLoadException ex) {

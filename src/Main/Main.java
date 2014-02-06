@@ -12,6 +12,8 @@ import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import java.awt.Font;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class Main extends GLJPanel implements GLEventListener {
     private static int width;
     private static int height;
     private List<Camera> cameras;
+    private TextRenderer renderer;
     private int activeCamera;
     private final FPSAnimator animator;
     private final KeyboardInput keyboardInput;
@@ -78,7 +81,13 @@ public class Main extends GLJPanel implements GLEventListener {
         this.skySphere.draw(gl);
 
         this.cameras.get(activeCamera).look(gl);
-
+        renderer.beginRendering(drawable.getWidth(), drawable.getHeight(),true);
+        // optionally set the color
+        //renderer.setColor(1.0f, 0.2f, 0.2f, 0.8f);
+        renderer.draw("Text to draw", 0, 0);
+        // ... more draw commands, color changes, etc.
+        renderer.endRendering();
+        
         gl.glFlush();
     }
 
@@ -89,12 +98,14 @@ public class Main extends GLJPanel implements GLEventListener {
 
     @Override
     public void init(GLAutoDrawable drawable) {
+        renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 36),false,false);
         GL2 gl = drawable.getGL().getGL2();
         GLU glu = GLU.createGLU(gl);
         gl.glEnable(GL2.GL_DEPTH_TEST);
         gl.glShadeModel(GL2.GL_SMOOTH);
         gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_FASTEST);
 //        gl.glEnable(GL2.GL_COLOR_MATERIAL);
+        //renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 36),false,false);
 //        gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_CULL_FACE);
         gl.glEnable(GL2.GL_NORMALIZE);
@@ -112,6 +123,7 @@ public class Main extends GLJPanel implements GLEventListener {
 
         //gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_LIGHT0);
+        
         // this.enableFog(gl);glMatrixMode(GL_PROJECTION);
     }
 
