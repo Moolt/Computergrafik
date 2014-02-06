@@ -12,11 +12,8 @@ import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
 
 //@SuppressWarnings("serial")
 public class Main extends GLJPanel implements GLEventListener {
@@ -56,8 +53,9 @@ public class Main extends GLJPanel implements GLEventListener {
         this.addGLEventListener(skySphere);
         this.addGLEventListener(road);
         this.cameras = new LinkedList<>();
-        this.cameras.add(new FirstPerson(towTruck, width, height));
         this.cameras.add(new ThirdPersonCamera(towTruck, width, height));
+        this.cameras.add(new ThirdPersonCamera(towTruck, width, height, 500f, 5, true));
+        this.cameras.add(new FirstPerson(towTruck, width, height));
         this.cameras.add(new Topdown(towTruck, width, height));
         this.activeCamera = 0;
         this.animator = new FPSAnimator(this, 60, false);
