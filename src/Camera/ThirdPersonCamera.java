@@ -92,4 +92,12 @@ public class ThirdPersonCamera extends Camera {
         return this.z;
     }
 
+    @Override
+    public String getName() {
+        String type = "ThirdPersonCamera";
+        if(isSticky){
+            type += " (sticky)";
+        }
+        return type;
+    }
 }

@@ -63,4 +63,10 @@ public abstract class Camera {
      * @return Die Z-Position der Kamera
      */
     public abstract float getZ();
+    
+    /**
+     * 
+     * @return Der Name btw. Typ der Kamera
+     */
+    public abstract String getName();
 }

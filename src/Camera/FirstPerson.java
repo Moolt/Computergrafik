@@ -62,4 +62,9 @@ public class FirstPerson extends Camera {
         return this.z;
     }
 
+    @Override
+    public String getName() {
+        return "FirstPerson";
+    }
+
 }

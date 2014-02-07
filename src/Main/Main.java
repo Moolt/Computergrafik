@@ -33,6 +33,7 @@ public class Main extends GLJPanel implements GLEventListener {
     private Car towTruck;
     private final SkySphere skySphere;
     private final Road road;
+    private boolean showHints = true;
 
     public static void main(String[] args) {
         JFrame window = new JFrame();
@@ -69,41 +70,45 @@ public class Main extends GLJPanel implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        boolean showHints = true; 
+
         GLUT glut = new GLUT();
-        if(KeyboardInput.isReleased(KeyEvent.VK_C)){
+        if (KeyboardInput.isReleased(KeyEvent.VK_C)) {
             this.activeCamera += 1;
-            if(activeCamera >= cameras.size()){
+            if (activeCamera >= cameras.size()) {
                 activeCamera = 0;
             }
-            keyboardInput.update();
+
         }
-        if(KeyboardInput.isReleased(KeyEvent.VK_Q)){
+
+        if (KeyboardInput.isReleased(KeyEvent.VK_Q)) {
             keyboardInput.update();
-            if(showHints){
-                showHints=false;
-            }else{ 
-                showHints=true;
+            if (showHints) {
+                showHints = false;
+            } else {
+                showHints = true;
             }
         }
-        
+
         GL2 gl = drawable.getGL().getGL2();
-        GLU glu = GLU.createGLU(gl); 
+        GLU glu = GLU.createGLU(gl);
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         this.skySphere.draw(gl);
 
         this.cameras.get(activeCamera).look(gl);
-        if(showHints){
-            gl.glWindowPos2i(450, 420);
-            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "W A S D zum fahren nutzen");
-            gl.glWindowPos2i(450, 400);
-            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "SPACE zum Bremsen");
-            gl.glWindowPos2i(450, 380);
-            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "C zum aendern der Kamera");
-            gl.glWindowPos2i(450, 360);
-            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Q zum Ausblenden der Hinweise");
-        }    
+        if (showHints) {
+            gl.glWindowPos2i(10, 420);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, "W A S D zum Fahren nutzen");
+            gl.glWindowPos2i(10, 400);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, "SPACE zum Bremsen");
+            gl.glWindowPos2i(10, 380);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, "C zum Aendern der Kamera");
+            gl.glWindowPos2i(10, 360);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, "Q zum Ausblenden der Hinweise");
+            gl.glWindowPos2i(10, 340);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, "Aktive Kamera: " + this.cameras.get(activeCamera).getName());
+        }
         gl.glFlush();
+        keyboardInput.update();
     }
 
     @Override
@@ -113,7 +118,7 @@ public class Main extends GLJPanel implements GLEventListener {
 
     @Override
     public void init(GLAutoDrawable drawable) {
-        renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 36),false,false);
+        renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 36), false, false);
         GL2 gl = drawable.getGL().getGL2();
         GLU glu = GLU.createGLU(gl);
         gl.glEnable(GL2.GL_DEPTH_TEST);
@@ -138,8 +143,8 @@ public class Main extends GLJPanel implements GLEventListener {
 
         //gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_LIGHT0);
-        
-         //this.enableFog(gl);//glMatrixMode(GL_PROJECTION);
+
+        //this.enableFog(gl);//glMatrixMode(GL_PROJECTION);
     }
 
     @Override
@@ -155,8 +160,8 @@ public class Main extends GLJPanel implements GLEventListener {
     }
 
     private void enableFog(GL2 gl) {
-    
-        float[] fogcol = { 0.5f, 0.5f, 0.5f, 0.1f };
+
+        float[] fogcol = {0.5f, 0.5f, 0.5f, 0.1f};
         gl.glEnable(gl.getGL2ES1().GL_FOG);
         gl.glFogi(gl.getGL2ES1().GL_FOG_MODE, gl.GL_EXP2);
         gl.glFogf(gl.getGL2ES1().GL_FOG_DENSITY, 0.35f);
@@ -164,13 +169,13 @@ public class Main extends GLJPanel implements GLEventListener {
         gl.glFogf(gl.getGL2ES1().GL_FOG_START, 90 - 30);
         gl.glFogf(gl.getGL2ES1().GL_FOG_END, 90);
         gl.glHint(gl.getGL2ES1().GL_FOG_HINT, gl.GL_NICEST);
-        
+
         /*float density = 0.3f;
-        float[] fogColor = {.1f, .1f, .1f, 1.0f};
-        gl.glEnable(GL2.GL_FOG);
-        gl.glFogi(GL2.GL_FOG_MODE, GL2.GL_EXP2);
-        gl.glFogfv(GL2.GL_FOG_COLOR, fogColor, 1);
-        gl.glFogf(GL2.GL_FOG_DENSITY, density);*/
+         float[] fogColor = {.1f, .1f, .1f, 1.0f};
+         gl.glEnable(GL2.GL_FOG);
+         gl.glFogi(GL2.GL_FOG_MODE, GL2.GL_EXP2);
+         gl.glFogfv(GL2.GL_FOG_COLOR, fogColor, 1);
+         gl.glFogf(GL2.GL_FOG_DENSITY, density);*/
     }
 
     public void zoomIn() {

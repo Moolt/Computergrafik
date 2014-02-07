@@ -63,4 +63,8 @@ public class Topdown extends Camera {
         return this.z;
     }
 
+    @Override
+    public String getName() {
+        return "TopDown";
+    }
 }
