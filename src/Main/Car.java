@@ -119,19 +119,19 @@ public class Car implements GLEventListener, Followable {
             this.direction=direction%360;
         //Berechnung der Position aus Richtung und Geschwindigkeit
         double tmpx = Math.sin(Math.toRadians(direction)) * speed / 3;
+        //System.out.println("MInXTop: "+minXTop+" MaxXTop: "+maxXTop+" D: "+direction);
+ 
         if(maxXTop<=90.1 && minXTop<=82.1){
             this.x += tmpx;
             maxXTop += tmpx;
-            minXTop -= tmpx;       
+            minXTop -= tmpx;
             this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
         }else{
-           if((maxXTop>90.1 && (direction<0||direction>180))||(minXTop>82.1 && (direction>0||direction<-180))){       
+           if(((maxXTop>90.1 && (direction<0||direction>180))||(minXTop>82.1 && (direction>0||direction<-180))) && (speed>=0)){       
                 if(maxXTop>90.1 && direction<0 && direction>-180){
                     this.x += tmpx;
                     maxXTop += tmpx;
                     minXTop -= tmpx;
-                }else if( maxXTop>90.1 && direction<-180){
-                    //Sliden
                 }else if( maxXTop>90.1 && direction>180){
                     this.x += tmpx;
                     maxXTop += tmpx;
@@ -140,14 +140,32 @@ public class Car implements GLEventListener, Followable {
                     this.x += tmpx;
                     maxXTop += tmpx;
                     minXTop -= tmpx;
-                }else if(minXTop>82.1 && direction>180){
-                    //Sliden
                 }else if(minXTop>82.1 && direction<-180) {
                     this.x += tmpx;
                     maxXTop += tmpx;
                     minXTop -= tmpx;
                 }             
                 this.z += Math.cos(Math.toRadians(direction)) * speed / 3; 
+           }else if(((maxXTop>90.1 && (direction>0 || direction<-180))||(minXTop>82.1 && (direction<0 || direction>180))) && (speed<0)){             
+               if(minXTop>82.1 && direction<0 && direction>-180){
+                    this.x += tmpx;
+                    maxXTop += tmpx;
+                    minXTop -= tmpx;
+                }else if(minXTop>82.1 && direction>180){
+                    this.x += tmpx;
+                    maxXTop += tmpx;
+                    minXTop -= tmpx;
+                }
+                else if(maxXTop>90.1 && direction>0 && direction<180){
+                    this.x += tmpx;
+                    maxXTop += tmpx;
+                    minXTop -= tmpx;
+                }else if(maxXTop>90.1 && direction<-180){
+                    this.x += tmpx;
+                    maxXTop += tmpx;
+                    minXTop -= tmpx;
+                }
+               this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
            }else{
                this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
            }
