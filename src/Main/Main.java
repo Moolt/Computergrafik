@@ -76,15 +76,16 @@ public class Main extends GLJPanel implements GLEventListener {
         }
         
         GL2 gl = drawable.getGL().getGL2();
-        GLU glu = GLU.createGLU(gl);
+        GLU glu = GLU.createGLU(gl); 
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         this.skySphere.draw(gl);
 
         this.cameras.get(activeCamera).look(gl);
-        renderer.beginRendering(drawable.getWidth(), drawable.getHeight(),true);
+        renderer.beginRendering(drawable.getWidth(), drawable.getHeight());
         // optionally set the color
         //renderer.setColor(1.0f, 0.2f, 0.2f, 0.8f);
         renderer.draw("Text to draw", 0, 0);
+        renderer.setUseVertexArrays(true);
         // ... more draw commands, color changes, etc.
         renderer.endRendering();
         
@@ -124,7 +125,7 @@ public class Main extends GLJPanel implements GLEventListener {
         //gl.glEnable(GL2.GL_LIGHTING);
         gl.glEnable(GL2.GL_LIGHT0);
         
-        // this.enableFog(gl);glMatrixMode(GL_PROJECTION);
+         //this.enableFog(gl);//glMatrixMode(GL_PROJECTION);
     }
 
     @Override
@@ -140,12 +141,22 @@ public class Main extends GLJPanel implements GLEventListener {
     }
 
     private void enableFog(GL2 gl) {
-        float density = 0.3f;
+    
+        float[] fogcol = { 0.5f, 0.5f, 0.5f, 0.1f };
+        gl.glEnable(gl.getGL2ES1().GL_FOG);
+        gl.glFogi(gl.getGL2ES1().GL_FOG_MODE, gl.GL_EXP2);
+        gl.glFogf(gl.getGL2ES1().GL_FOG_DENSITY, 0.35f);
+        gl.glFogfv(gl.getGL2ES1().GL_FOG_COLOR, fogcol, 1);
+        gl.glFogf(gl.getGL2ES1().GL_FOG_START, 90 - 30);
+        gl.glFogf(gl.getGL2ES1().GL_FOG_END, 90);
+        gl.glHint(gl.getGL2ES1().GL_FOG_HINT, gl.GL_NICEST);
+        
+        /*float density = 0.3f;
         float[] fogColor = {.1f, .1f, .1f, 1.0f};
         gl.glEnable(GL2.GL_FOG);
         gl.glFogi(GL2.GL_FOG_MODE, GL2.GL_EXP2);
         gl.glFogfv(GL2.GL_FOG_COLOR, fogColor, 1);
-        gl.glFogf(GL2.GL_FOG_DENSITY, density);
+        gl.glFogf(GL2.GL_FOG_DENSITY, density);*/
     }
 
     public void zoomIn() {

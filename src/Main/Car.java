@@ -117,20 +117,38 @@ public class Car implements GLEventListener, Followable {
 
         //Anpassen der Richtung anhand der Reifendrehung und Geschwindigkeit
         this.direction += (speed * tireTurn) / steering;
-
+        if (direction>360 || direction <-360)
+            this.direction=direction%360;
         //Berechnung der Position aus Richtung und Geschwindigkeit
+        double tmpx = Math.sin(Math.toRadians(direction)) * speed / 3;
         if(maxXTop<=90.1 && minXTop<=82.1){
-            float tmpx = this.x;
-            this.x += Math.sin(Math.toRadians(direction)) * speed / 3;
-            maxXTop += (this.x-tmpx);
-            minXTop -= (this.x-tmpx);       
+            this.x += tmpx;
+            maxXTop += tmpx;
+            minXTop -= tmpx;       
             this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
         }else{
-           if((maxXTop>90.1 && (direction<0||direction>180))||(minXTop>82.1 && (direction>0||direction<-180))){ 
-                float tmpx = this.x;
-                this.x += Math.sin(Math.toRadians(direction)) * speed / 3;
-                maxXTop += (this.x-tmpx);
-                minXTop -= (this.x-tmpx);               
+           if((maxXTop>90.1 && (direction<0||direction>180))||(minXTop>82.1 && (direction>0||direction<-180))){       
+                if(maxXTop>90.1 && direction<0 && direction>-180){
+                    this.x += tmpx;
+                    maxXTop += tmpx;
+                    minXTop -= tmpx;
+                }else if( maxXTop>90.1 && direction<-180){
+                    //Sliden
+                }else if( maxXTop>90.1 && direction>180){
+                    this.x += tmpx;
+                    maxXTop += tmpx;
+                    minXTop -= tmpx;
+                }else if(minXTop>82.1 && direction>0 && direction <180){
+                    this.x += tmpx;
+                    maxXTop += tmpx;
+                    minXTop -= tmpx;
+                }else if(minXTop>82.1 && direction>180){
+                    //Sliden
+                }else if(minXTop>82.1 && direction<-180) {
+                    this.x += tmpx;
+                    maxXTop += tmpx;
+                    minXTop -= tmpx;
+                }             
                 this.z += Math.cos(Math.toRadians(direction)) * speed / 3; 
            }else{
                this.z += Math.cos(Math.toRadians(direction)) * speed / 3;
