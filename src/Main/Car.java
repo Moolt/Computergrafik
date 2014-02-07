@@ -108,13 +108,11 @@ public class Car implements GLEventListener, Followable {
         } else if (speed < 0) {
             speed += acceleration / 2;
         } 
-
         //Bremse beim Druecken der Leertaste
         if (KeyboardInput.isPressed(KeyEvent.VK_SPACE)) {
             speed -= speed / 30;
             reverse = true;
         }
-
         //Anpassen der Richtung anhand der Reifendrehung und Geschwindigkeit
         this.direction += (speed * tireTurn) / steering;
         if (direction>360 || direction <-360)

@@ -13,9 +13,11 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
+import com.jogamp.opengl.util.gl2.GLUT;
 import java.awt.Font;
 import java.util.LinkedList;
 import java.util.List;
+import javax.media.opengl.glu.gl2.GLUgl2;
 
 //@SuppressWarnings("serial")
 public class Main extends GLJPanel implements GLEventListener {
@@ -67,12 +69,22 @@ public class Main extends GLJPanel implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable drawable) {
+        boolean showHints = true; 
+        GLUT glut = new GLUT();
         if(KeyboardInput.isReleased(KeyEvent.VK_C)){
             this.activeCamera += 1;
             if(activeCamera >= cameras.size()){
                 activeCamera = 0;
             }
             keyboardInput.update();
+        }
+        if(KeyboardInput.isReleased(KeyEvent.VK_Q)){
+            keyboardInput.update();
+            if(showHints){
+                showHints=false;
+            }else{ 
+                showHints=true;
+            }
         }
         
         GL2 gl = drawable.getGL().getGL2();
@@ -81,14 +93,16 @@ public class Main extends GLJPanel implements GLEventListener {
         this.skySphere.draw(gl);
 
         this.cameras.get(activeCamera).look(gl);
-        renderer.beginRendering(drawable.getWidth(), drawable.getHeight());
-        // optionally set the color
-        //renderer.setColor(1.0f, 0.2f, 0.2f, 0.8f);
-        renderer.draw("Text to draw", 0, 0);
-        renderer.setUseVertexArrays(true);
-        // ... more draw commands, color changes, etc.
-        renderer.endRendering();
-        
+        if(showHints){
+            gl.glWindowPos2i(450, 420);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "W A S D zum fahren nutzen");
+            gl.glWindowPos2i(450, 400);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "SPACE zum Bremsen");
+            gl.glWindowPos2i(450, 380);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "C zum aendern der Kamera");
+            gl.glWindowPos2i(450, 360);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, "Q zum Ausblenden der Hinweise");
+        }    
         gl.glFlush();
     }
 
