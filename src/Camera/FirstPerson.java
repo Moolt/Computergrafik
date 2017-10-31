@@ -19,6 +19,7 @@ public class FirstPerson extends Camera {
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
+//some comment
         glu.gluPerspective(45, width / height, 1.0, 100000);
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();

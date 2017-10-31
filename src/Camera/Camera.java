@@ -22,9 +22,8 @@ public abstract class Camera {
     public Camera(Followable obj, int width, int height) {
         //this.obj = obj;
         Followable obj2 = obj;
-        this.obj = obj2;
-        this.width = width + 1;
-        this.height = height + 1;
+        this.width = width;
+        this.height = height;
     }
 
     /**
