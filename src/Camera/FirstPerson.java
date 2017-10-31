@@ -30,7 +30,7 @@ public class FirstPerson extends Camera {
         float endX = (float) Math.sin(Math.toRadians(obj.getDirection())) * obj.getSpeed();
         float endZ = (float) Math.cos(Math.toRadians(obj.getDirection())) * obj.getSpeed();
 
-        this.x = obj.getX() - frontX;
+        this.x = obj.getX() - frontX - 2;
         this.z = obj.getZ() - frontZ;
         this.y = obj.getY() + 70;
 
