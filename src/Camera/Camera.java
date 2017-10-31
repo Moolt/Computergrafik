@@ -20,9 +20,9 @@ public abstract class Camera {
     protected float z = 0f;
 
     public Camera(Followable obj, int width, int height) {
-        this.obj = obj;
-        this.width = width;
-        this.height = height;
+//        this.obj = obj;
+        this.width = width * 2;
+        this.height = height * 2;
     }
 
     /**
