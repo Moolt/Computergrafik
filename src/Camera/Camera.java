@@ -1,4 +1,4 @@
-package Camera;
+﻿package Camera;
 
 import javax.media.opengl.GL2;
 
@@ -69,4 +69,6 @@ public abstract class Camera {
      * @return Der Name btw. Typ der Kamera
      */
     public abstract String getName();
+
+	public abstract String TestFunction();
 }
